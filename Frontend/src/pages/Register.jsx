@@ -115,7 +115,7 @@ function Register() {
                 placeholder="Nombre"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="p-3 border rounded-lg dark:bg-slate-700"
+                className="p-3 border rounded-lg dark:bg-slate-700 dark:text-white"
               />
               {errors.name && (
                 <span className="text-red-500 text-sm">{errors.name}</span>
@@ -127,7 +127,7 @@ function Register() {
                 placeholder="Correo electrónico"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="p-3 border rounded-lg dark:bg-slate-700"
+                className="p-3 border rounded-lg dark:bg-slate-700 dark:text-white"
               />
               {errors.email && (
                 <span className="text-red-500 text-sm">{errors.email}</span>
@@ -141,7 +141,7 @@ function Register() {
                 onFocus={() => setShowHint(true)}
                 onBlur={() => setShowHint(false)}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="p-3 border rounded-lg dark:bg-slate-700"
+                className="p-3 border rounded-lg dark:bg-slate-700 dark:text-white"
               />
               {showHint && (
                 <span className="text-gray-500 text-sm">

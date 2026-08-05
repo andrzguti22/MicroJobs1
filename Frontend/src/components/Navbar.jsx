@@ -11,7 +11,7 @@ function Navbar() {
     <nav className="fixed top-0 left-0 w-full bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 shadow-sm px-4 md:px-8 py-4 z-50 ">
       <div className="flex justify-between items-center ">
         {/* LOGO */}
-        <Link to="/" className="flex items-center gap-2 dark:bg-slate-900 p-2 rounded-lg shadow cursor-pointer transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-105 dark:hover:bg-slate-900 ">
+        <Link to="/" className="flex items-center gap-2 dark:bg-slate-900 p-2 rounded-lg shadow cursor-pointer transition-all duration-300 ease-out ">
           <img src="/logo.png" alt="logo" className="w-10 h-10 rounded-lg" />
           <h1 className="font-bold text-lg md:text-xl">
             <span className="text-dark dark:text-white">Micro</span>
