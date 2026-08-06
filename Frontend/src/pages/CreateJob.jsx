@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
+import { apiFetch } from "../api/client";
 
 function CreateJob() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ function CreateJob() {
     try {
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-      const response = await fetch("http://localhost:8000/jobs", {
+      const response = await apiFetch("http://localhost:8000/jobs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

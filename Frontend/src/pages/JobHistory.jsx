@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import StatCardSkeleton from "../components/StatSkeletonCard";
+import { apiFetch } from "../api/client";
 
 function JobHistory() {
   const [history, setHistory] = useState([]);
@@ -21,7 +22,7 @@ function JobHistory() {
 
       if (!currentUser) return;
 
-      const response = await fetch(`http://localhost:8000/job-history/${currentUser.id}`);
+      const response = await apiFetch(`http://localhost:8000/job-history/${currentUser.id}`);
 
       if (!response.ok) {
         throw new Error("Error cargando historial");

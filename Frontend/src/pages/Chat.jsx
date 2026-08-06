@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
+import { apiFetch } from "../api/client";
 
 function Chat() {
   const { chatId } = useParams();
@@ -14,7 +15,7 @@ function Chat() {
   // 🔥 cargar mensajes
   const loadMessages = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/messages/${chatId}`);
+      const response = await apiFetch(`http://localhost:8000/messages/${chatId}`);
 
       const data = await response.json();
 
@@ -39,7 +40,7 @@ function Chat() {
     if (!input.trim()) return;
 
     try {
-      const response = await fetch("http://localhost:8000/messages", {
+      const response = await apiFetch("http://localhost:8000/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import StatCardSkeleton from "../components/StatSkeletonCard";
+import { apiFetch } from "../api/client";
 
 function MyApplications() {
   const [applications, setApplications] = useState([]);
@@ -17,7 +18,7 @@ function MyApplications() {
           return;
         }
 
-        const response = await fetch(`http://localhost:8000/applications/user/${currentUser.id}`);
+        const response = await apiFetch(`http://localhost:8000/applications/user/${currentUser.id}`);
 
         if (!response.ok) {
           throw new Error("Error cargando postulaciones");

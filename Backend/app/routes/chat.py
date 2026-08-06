@@ -10,6 +10,7 @@ from app.models.notification import Notification
 
 from app.schemas.message import MessageCreate
 from app.schemas.conversation import ConversationCreate
+from app.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -34,7 +35,8 @@ def get_db():
 @router.post("/conversations")
 def create_conversation(
     conversation: ConversationCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     # 🔥 validar usuarios
@@ -43,6 +45,9 @@ def create_conversation(
 
     if conversation.user_two_id is None:
         raise HTTPException(400, "user_two_id es requerido")
+
+    if current_user.id not in (conversation.user_one_id, conversation.user_two_id):
+        raise HTTPException(403, "No puedes crear una conversación en la que no participas")
 
     # 🔥 verificar si ya existe
     existing = db.query(Conversation).filter(
@@ -99,8 +104,12 @@ def create_conversation(
 @router.get("/conversations/user/{user_id}")
 def get_user_conversations(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+
+    if current_user.id != user_id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes ver las conversaciones de otro usuario")
 
     conversations = db.query(Conversation).filter(
         (Conversation.user_one_id == user_id)
@@ -184,7 +193,8 @@ def get_user_conversations(
 @router.post("/messages")
 def send_message(
     message: MessageCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     # 🔥 validar conversación
@@ -195,12 +205,15 @@ def send_message(
     if not conversation:
         raise HTTPException(404, "Conversación no encontrada")
 
+    if current_user.id not in (conversation.user_one_id, conversation.user_two_id):
+        raise HTTPException(403, "No participas en esta conversación")
+
     # =========================================
     # 🔥 CREAR MENSAJE
     # =========================================
     new_message = Message(
         conversation_id=message.conversation_id,
-        sender_id=message.sender_id,
+        sender_id=current_user.id,
         text=message.text,
         is_read=False
     )
@@ -217,20 +230,16 @@ def send_message(
     # =========================================
     receiver_id = (
         conversation.user_two_id
-        if conversation.user_one_id == message.sender_id
+        if conversation.user_one_id == current_user.id
         else conversation.user_one_id
     )
 
     # =========================================
     # 🔥 CREAR NOTIFICACIÓN
     # =========================================
-    sender = db.query(User).filter(
-        User.id == message.sender_id
-    ).first()
-
     notification = Notification(
         user_id=receiver_id,
-        text=f"{sender.name} te envió un mensaje 💬"
+        text=f"{current_user.name} te envió un mensaje 💬"
     )
 
     db.add(notification)
@@ -251,8 +260,19 @@ def send_message(
 @router.get("/messages/{conversation_id}")
 def get_messages(
     conversation_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+
+    conversation = db.query(Conversation).filter(
+        Conversation.id == conversation_id
+    ).first()
+
+    if not conversation:
+        raise HTTPException(404, "Conversación no encontrada")
+
+    if current_user.id not in (conversation.user_one_id, conversation.user_two_id) and current_user.role != "admin":
+        raise HTTPException(403, "No participas en esta conversación")
 
     messages = db.query(Message).filter(
         Message.conversation_id == conversation_id
@@ -285,8 +305,12 @@ def get_messages(
 def mark_as_read(
     conversation_id: int,
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+
+    if current_user.id != user_id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes marcar como leídos los mensajes de otro usuario")
 
     messages = db.query(Message).filter(
         Message.conversation_id == conversation_id,

@@ -18,6 +18,7 @@ from app.routes import (
     applications,
     notifications,
     portfolio,
+    admin,
 )
 
 from app.routes.review import router as review_router
@@ -60,5 +61,6 @@ app.include_router(conversations.router)
 app.include_router(notifications.router)
 app.include_router(review_router)
 app.include_router(portfolio.router)
+app.include_router(admin.router)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

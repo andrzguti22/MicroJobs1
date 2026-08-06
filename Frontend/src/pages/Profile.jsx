@@ -6,6 +6,7 @@ import PageWrapper from "../components/PageWrapper";
 import UserProfileSkeleton from "../components/UserProfileSkeleton";
 import Avatar from "../components/Avatar";
 import PortfolioGallery from "../components/PortfolioGallery";
+import { apiFetch } from "../api/client";
 
 function Profile() {
   const { user } = useContext(UserContext);
@@ -21,7 +22,7 @@ function Profile() {
       try {
         if (!user?.id) return;
 
-        const response = await fetch(`http://localhost:8000/users/${user.id}`);
+        const response = await apiFetch(`http://localhost:8000/users/${user.id}`);
 
         if (!response.ok) {
           throw new Error("Error cargando perfil");

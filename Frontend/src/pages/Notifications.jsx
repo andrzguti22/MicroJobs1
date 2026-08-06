@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import { Bell} from "lucide-react";
+import { apiFetch } from "../api/client";
 
 function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -13,7 +14,7 @@ function Notifications() {
 
   const loadNotifications = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/notifications/${currentUser.id}`);
+      const response = await apiFetch(`http://localhost:8000/notifications/${currentUser.id}`);
 
       const data = await response.json();
 
@@ -25,7 +26,7 @@ function Notifications() {
 
   const markAsRead = async (id) => {
     try {
-      await fetch(`http://localhost:8000/notifications/read/${id}`, {
+      await apiFetch(`http://localhost:8000/notifications/read/${id}`, {
         method: "PUT",
       });
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import JobSkeleton from "../components/JobSkeleton";
+import { apiFetch } from "../api/client";
 
 function MyJobs() {
   const [activeJobs, setActiveJobs] = useState([]);
@@ -21,7 +22,7 @@ function MyJobs() {
 
       if (!currentUser) return;
 
-      const response = await fetch(`http://localhost:8000/jobs/user/${currentUser.id}`);
+      const response = await apiFetch(`http://localhost:8000/jobs/user/${currentUser.id}`);
 
       if (!response.ok) {
         throw new Error("Error obteniendo trabajos");
@@ -45,7 +46,7 @@ function MyJobs() {
   // 🔥 ELIMINAR TRABAJO
   const handleDelete = async (jobId) => {
     try {
-      const response = await fetch(`http://localhost:8000/jobs/${jobId}`, {
+      const response = await apiFetch(`http://localhost:8000/jobs/${jobId}`, {
         method: "DELETE",
       });
 
@@ -68,7 +69,7 @@ function MyJobs() {
 
       if (!confirmFinish) return;
 
-      const response = await fetch(`http://localhost:8000/jobs/${job.id}/finish`, {
+      const response = await apiFetch(`http://localhost:8000/jobs/${job.id}/finish`, {
         method: "PUT",
       });
 
@@ -102,7 +103,7 @@ function MyJobs() {
         user_two_id: job.assigned_to_id,
       });
 
-      const response = await fetch("http://localhost:8000/conversations", {
+      const response = await apiFetch("http://localhost:8000/conversations", {
         method: "POST",
 
         headers: {

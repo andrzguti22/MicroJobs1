@@ -13,6 +13,8 @@ from app.utils.security import hash_password, verify_password
 from app.schemas.user import UserProfile
 from app.schemas.user import ForgotPasswordRequest, ResetPasswordRequest
 from app.utils.email_sender import send_password_reset_email
+from app.utils.jwt_handler import create_access_token
+from app.dependencies import get_current_user
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
@@ -44,8 +46,21 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
     db.add(new_user)
     db.commit()
+    db.refresh(new_user)
 
-    return {"message": "Usuario creado"}
+    access_token = create_access_token(data={"sub": str(new_user.id)})
+
+    return {
+        "message": "Usuario creado",
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": new_user.id,
+            "name": new_user.name,
+            "email": new_user.email,
+            "role": new_user.role,
+        },
+    }
 
 # 🔵 LOGIN
 @router.post("/login")
@@ -57,8 +72,12 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     if not db_user or not verify_password(user.password, db_user.password):
         raise HTTPException(401, "Credenciales inválidas")
 
+    access_token = create_access_token(data={"sub": str(db_user.id)})
+
     return {
         "message": "Login exitoso",
+        "access_token": access_token,
+        "token_type": "bearer",
         "user": {
             "id": db_user.id,
             "email": db_user.email,
@@ -86,12 +105,16 @@ async def update_profile(
     skills: str = Form(...),
     profile_image: UploadFile | None = File(None),
     db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
 ):
 
     user = db.query(User).filter(User.email == email).first()
 
     if not user:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if current_user.id != user.id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes editar el perfil de otro usuario")
 
     user.city = city
     user.phone = phone

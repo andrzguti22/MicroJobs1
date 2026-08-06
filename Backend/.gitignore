@@ -1,0 +1,19 @@
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Variables de entorno (NUNCA subir credenciales reales)
+.env
+
+# Bytecode de Python
+__pycache__/
+*.pyc
+
+# Archivos subidos por usuarios (imágenes de perfil y portafolio)
+uploads/*
+!uploads/.gitkeep
+
+# Editor
+.vscode/
+.idea/

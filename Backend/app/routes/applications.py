@@ -8,6 +8,7 @@ from app.models.job import Job
 from app.models.user import User
 from app.schemas.application import ApplicationCreate
 from app.models.notification import Notification
+from app.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -27,7 +28,8 @@ def get_db():
 @router.post("/applications")
 def create_application(
     application: ApplicationCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     # 🔍 validar trabajo
@@ -38,17 +40,14 @@ def create_application(
     if not job:
         raise HTTPException(404, "Trabajo no encontrado")
 
-    # 🔍 validar usuario
-    user = db.query(User).filter(
-        User.id == application.user_id
-    ).first()
+    user = current_user
 
-    if not user:
-        raise HTTPException(404, "Usuario no encontrado")
+    if job.owner_id == user.id:
+        raise HTTPException(400, "No puedes postularte a tu propio trabajo")
 
     # 🔥 validar duplicado
     exists = db.query(Application).filter(
-        Application.user_id == application.user_id,
+        Application.user_id == user.id,
         Application.job_id == application.job_id
     ).first()
 
@@ -57,7 +56,7 @@ def create_application(
 
     # 🔥 crear postulación
     new_application = Application(
-        user_id=application.user_id,
+        user_id=user.id,
         job_id=application.job_id,
         status="pending"
     )
@@ -87,9 +86,12 @@ def create_application(
 @router.get("/applications/user/{user_id}")
 def get_my_applications(
     user_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
+    if current_user.id != user_id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes ver las postulaciones de otro usuario")
 
     applications = db.query(Application).filter(
         Application.user_id == user_id
@@ -123,8 +125,17 @@ def get_my_applications(
 @router.get("/applications/job/{job_id}")
 def get_job_applications(
     job_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+
+    job = db.query(Job).filter(Job.id == job_id).first()
+
+    if not job:
+        raise HTTPException(404, "Trabajo no encontrado")
+
+    if job.owner_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes ver las postulaciones de este trabajo")
 
     applications = db.query(Application).filter(
         Application.job_id == job_id
@@ -160,7 +171,8 @@ def get_job_applications(
 def update_application_status(
     application_id: int,
     status: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     # 🔍 buscar aplicación
@@ -178,6 +190,9 @@ def update_application_status(
 
     if not job:
         raise HTTPException(404, "Trabajo no encontrado")
+
+    if job.owner_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes modificar postulaciones de otro usuario")
 
     # 🔥 validar estado
     allowed_status = ["accepted", "rejected"]

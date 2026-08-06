@@ -10,6 +10,7 @@ from app.models.application import Application
 from app.models.job_history import JobHistory
 
 from app.schemas.job import JobCreate
+from app.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -128,16 +129,10 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
 @router.post("/jobs")
 def create_job(
     job: JobCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
-    user = db.query(User).filter(
-        User.id == job.owner_id
-    ).first()
-
-    if not user:
-        raise HTTPException(404, "Usuario no encontrado")
-    
     if job.price <= 0:
         raise HTTPException(
             status_code=400,
@@ -155,7 +150,7 @@ def create_job(
         description=job.description,
         location=job.location,
         price=job.price,
-        owner_id=user.id
+        owner_id=current_user.id
     )
 
     db.add(new_job)
@@ -205,7 +200,8 @@ def get_user_jobs(user_id: int, db: Session = Depends(get_db)):
 @router.delete("/jobs/{job_id}")
 def delete_job(
     job_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     job = db.query(Job).filter(
@@ -214,6 +210,9 @@ def delete_job(
 
     if not job:
         raise HTTPException(404, "Trabajo no encontrado")
+
+    if job.owner_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes eliminar un trabajo que no te pertenece")
 
     db.delete(job)
 
@@ -230,7 +229,8 @@ def delete_job(
 @router.put("/jobs/{job_id}/finish")
 def finish_job(
     job_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
 
     job = db.query(Job).filter(
@@ -239,6 +239,9 @@ def finish_job(
 
     if not job:
         raise HTTPException(404, "Trabajo no encontrado")
+
+    if job.owner_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes finalizar un trabajo que no te pertenece")
 
     # 🔥 cambiar estado
     job.status = "finished"

@@ -5,6 +5,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import { Briefcase, History, HardHat, MessageCircle, Bell, User, Hand } from "lucide-react";
 import StatCardSkeleton from "../components/StatSkeletonCard";
 import Avatar from "../components/Avatar";
+import { apiFetch } from "../api/client";
 
 function Dashboard() {
   const { user, logout } = useContext(UserContext);
@@ -32,7 +33,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch("http://localhost:8000/jobs");
+        const response = await apiFetch("http://localhost:8000/jobs");
 
         if (!response.ok) {
           throw new Error("Error cargando trabajos");
@@ -61,10 +62,10 @@ function Dashboard() {
       if (!user) return;
 
       // 🔥 conversaciones
-      const conversationsResponse = await fetch(`http://localhost:8000/conversations/user/${user.id}`);
+      const conversationsResponse = await apiFetch(`http://localhost:8000/conversations/user/${user.id}`);
 
       // 🔥 notificaciones
-      const notificationsResponse = await fetch(`http://localhost:8000/notifications/${user.id}`);
+      const notificationsResponse = await apiFetch(`http://localhost:8000/notifications/${user.id}`);
 
       // =====================================
       // 🔥 MENSAJES
@@ -117,7 +118,7 @@ function Dashboard() {
     try {
       if (!user) return;
 
-      const response = await fetch(`http://localhost:8000/reviews/average/${user.id}`);
+      const response = await apiFetch(`http://localhost:8000/reviews/average/${user.id}`);
 
       if (!response.ok) {
         throw new Error("Error obteniendo calificación");

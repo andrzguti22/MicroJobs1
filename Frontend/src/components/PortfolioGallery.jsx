@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ImagePlus, Loader2, Trash2, X, ImageOff } from "lucide-react";
+import { apiFetch } from "../api/client";
 
 const API_URL = "http://localhost:8000";
 
@@ -21,7 +22,7 @@ function PortfolioGallery({ userId, editable = false }) {
 
   const fetchImages = async () => {
     try {
-      const response = await fetch(`${API_URL}/users/${userId}/portfolio`);
+      const response = await apiFetch(`${API_URL}/users/${userId}/portfolio`);
 
       if (!response.ok) {
         throw new Error("Error cargando el portafolio");
@@ -68,7 +69,7 @@ function PortfolioGallery({ userId, editable = false }) {
     setUploading(true);
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_URL}/users/${userId}/portfolio`,
         {
           method: "POST",
@@ -98,7 +99,7 @@ function PortfolioGallery({ userId, editable = false }) {
     setDeletingId(imageId);
 
     try {
-      const response = await fetch(`${API_URL}/portfolio/${imageId}`, {
+      const response = await apiFetch(`${API_URL}/portfolio/${imageId}`, {
         method: "DELETE",
       });
 

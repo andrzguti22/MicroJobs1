@@ -5,6 +5,7 @@ import PageWrapper from "../components/PageWrapper";
 import UserProfileSkeleton from "../components/UserProfileSkeleton";
 import Avatar from "../components/Avatar";
 import PortfolioGallery from "../components/PortfolioGallery";
+import { apiFetch } from "../api/client";
 
 function UserProfile() {
   const { id } = useParams();
@@ -24,7 +25,7 @@ function UserProfile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/users/${id}`);
+        const response = await apiFetch(`http://localhost:8000/users/${id}`);
 
         if (!response.ok) {
           throw new Error("Usuario no encontrado");
@@ -32,7 +33,7 @@ function UserProfile() {
 
         const data = await response.json();
 
-        const reviewsResponse = await fetch(`http://localhost:8000/reviews/user/${id}`);
+        const reviewsResponse = await apiFetch(`http://localhost:8000/reviews/user/${id}`);
 
         if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();

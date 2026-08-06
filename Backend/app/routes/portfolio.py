@@ -9,6 +9,7 @@ from app.database import SessionLocal
 from app.models.user import User
 from app.models.portfolio import PortfolioImage
 from app.schemas.portfolio import PortfolioImageOut
+from app.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -60,7 +61,11 @@ async def upload_portfolio_image(
     description: str = Form(""),
     image: UploadFile = File(...),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+
+    if current_user.id != user_id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes subir imágenes al portafolio de otro usuario")
 
     user = db.query(User).filter(User.id == user_id).first()
 
@@ -121,12 +126,19 @@ async def upload_portfolio_image(
 # 🔥 ELIMINAR IMAGEN DEL PORTAFOLIO
 # ====================================
 @router.delete("/portfolio/{image_id}")
-def delete_portfolio_image(image_id: int, db: Session = Depends(get_db)):
+def delete_portfolio_image(
+    image_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
 
     image = db.query(PortfolioImage).filter(PortfolioImage.id == image_id).first()
 
     if not image:
         raise HTTPException(404, "Imagen no encontrada")
+
+    if current_user.id != image.user_id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes eliminar imágenes del portafolio de otro usuario")
 
     # Borrar el archivo físico si existe
     if image.image_path and os.path.exists(image.image_path):

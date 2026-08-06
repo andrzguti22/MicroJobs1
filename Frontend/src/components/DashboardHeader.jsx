@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
-import { Sun, Moon, Bell } from "lucide-react";
+import { Sun, Moon, Bell, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
+import { apiFetch } from "../api/client";
 
 function DashboardHeader({ showBell = false, showBackButton = true, backTo = null }) {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
     try {
       if (!currentUser || !showBell) return;
 
-      const response = await fetch(`http://localhost:8000/notifications/${currentUser.id}`);
+      const response = await apiFetch(`http://localhost:8000/notifications/${currentUser.id}`);
 
       if (!response.ok) {
         throw new Error("Error cargando notificaciones");
@@ -67,7 +68,7 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
     try {
       if (!currentUser) return;
 
-      await fetch(`http://localhost:8000/notifications/read-all/${currentUser.id}`, {
+      await apiFetch(`http://localhost:8000/notifications/read-all/${currentUser.id}`, {
         method: "PUT",
       });
 
@@ -108,6 +109,17 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
 
       {/* DERECHA */}
       <div className="flex items-center gap-4">
+        {/* 🛡️ ACCESO ADMIN */}
+        {currentUser?.role === "admin" && (
+          <Link
+            to="/admin"
+            className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-primary/10 text-primary px-3 py-2 rounded-lg hover:bg-primary/20 transition"
+          >
+            <ShieldAlert size={14} />
+            Admin
+          </Link>
+        )}
+
         <button
           onClick={toggleTheme}
           className="p-2 rounded-lg bg-gray-100 dark:bg-slate-700 hover:scale-110 transition"

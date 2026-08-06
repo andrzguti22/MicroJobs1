@@ -25,6 +25,11 @@ import Messages from "./pages/Messages";
 import Notifications from "./pages/Notifications";
 import Review from "./pages/Review";
 
+// 🛡️ ADMIN
+import AdminDashboard from "./pages/AdminDashboard";
+
+import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
+
 function App() {
   return (
     <Routes>
@@ -37,23 +42,25 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-      {/* 🔒 PRIVADAS */}
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/applications" element={<MyApplications />} />
-      <Route path="/my-jobs" element={<MyJobs />} />
-      <Route path="/create" element={<CreateJob />} />
-      <Route path="/explore" element={<ExploreJobs />} />
-      <Route path="/job/:id" element={<JobDetail />} />
-      <Route path="/job-applications/:jobId" element={<JobApplications />} />
-      <Route path="/job-history" element={<JobHistory />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/user/:id" element={<UserProfile />} />
-      <Route path="/chat/:chatId" element={<Chat />} />
-      <Route path="/messages" element={<Messages />} />
-      <Route path="/notifications" element={<Notifications />} />
-      <Route path="/review/:jobId" element={<Review />} />
-    </Routes>
+      {/* 🔒 PRIVADAS (requieren sesión iniciada) */}
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/applications" element={<ProtectedRoute><MyApplications /></ProtectedRoute>} />
+      <Route path="/my-jobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
+      <Route path="/create" element={<ProtectedRoute><CreateJob /></ProtectedRoute>} />
+      <Route path="/explore" element={<ProtectedRoute><ExploreJobs /></ProtectedRoute>} />
+      <Route path="/job/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
+      <Route path="/job-applications/:jobId" element={<ProtectedRoute><JobApplications /></ProtectedRoute>} />
+      <Route path="/job-history" element={<ProtectedRoute><JobHistory /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+      <Route path="/user/:id" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+      <Route path="/chat/:chatId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+      <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+      <Route path="/review/:jobId" element={<ProtectedRoute><Review /></ProtectedRoute>} />
 
+      {/* 🛡️ ADMIN (requiere rol admin) */}
+      <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+    </Routes>
   );
 }
 

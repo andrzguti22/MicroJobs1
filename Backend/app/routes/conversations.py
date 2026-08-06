@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 
 from app.models.conversation import Conversation
+from app.models.user import User
 
 from app.schemas.conversation import ConversationCreate
+from app.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -24,9 +26,11 @@ def get_db():
 @router.post("/conversations")
 def create_conversation(
     conversation: ConversationCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    print(conversation.dict())
+    if current_user.id not in (conversation.user_one_id, conversation.user_two_id):
+        raise HTTPException(403, "No puedes crear una conversación en la que no participas")
 
     # 🔥 verificar si ya existe
     existing = db.query(Conversation).filter(

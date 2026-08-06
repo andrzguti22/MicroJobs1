@@ -5,6 +5,7 @@ import PageWrapper from "../components/PageWrapper";
 import JobApplicationSkeleton from "../components/JobApplicationSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import Avatar from "../components/Avatar";
+import { apiFetch } from "../api/client";
 
 function JobApplications() {
   const { jobId } = useParams();
@@ -27,7 +28,7 @@ function JobApplications() {
   const fetchData = async () => {
     try {
       // 🔥 TRABAJO
-      const jobResponse = await fetch(`http://localhost:8000/jobs/${jobId}`);
+      const jobResponse = await apiFetch(`http://localhost:8000/jobs/${jobId}`);
 
       if (!jobResponse.ok) {
         throw new Error("Error cargando trabajo");
@@ -38,7 +39,7 @@ function JobApplications() {
       setJob(jobData);
 
       // 🔥 POSTULACIONES
-      const applicationsResponse = await fetch(`http://localhost:8000/applications/job/${jobId}`);
+      const applicationsResponse = await apiFetch(`http://localhost:8000/applications/job/${jobId}`);
 
       if (!applicationsResponse.ok) {
         throw new Error("Error cargando postulaciones");
@@ -89,7 +90,7 @@ function JobApplications() {
   // ====================================
   const handleStatus = async (appId, newStatus) => {
     try {
-      const response = await fetch(`http://localhost:8000/applications/${appId}?status=${newStatus}`, {
+      const response = await apiFetch(`http://localhost:8000/applications/${appId}?status=${newStatus}`, {
         method: "PUT",
       });
 
@@ -112,7 +113,7 @@ function JobApplications() {
     try {
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-      const response = await fetch("http://localhost:8000/conversations", {
+      const response = await apiFetch("http://localhost:8000/conversations", {
         method: "POST",
 
         headers: {

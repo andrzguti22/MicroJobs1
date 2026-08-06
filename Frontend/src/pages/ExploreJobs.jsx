@@ -3,6 +3,7 @@ import JobCard from "../components/JobCard";
 import DashboardHeader from "../components/DashboardHeader";
 import { motion } from "framer-motion";
 import PageWrapper from "../components/PageWrapper";
+import { apiFetch } from "../api/client";
 
 function ExploreJobs() {
   const [jobs, setJobs] = useState([]);
@@ -11,7 +12,7 @@ function ExploreJobs() {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const response = await fetch("http://localhost:8000/jobs");
+        const response = await apiFetch("http://localhost:8000/jobs");
 
         if (!response.ok) {
           throw new Error("Error al obtener trabajos");

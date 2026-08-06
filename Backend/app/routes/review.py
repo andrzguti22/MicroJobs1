@@ -1,13 +1,17 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 
 from app.models.review import Review
+from app.models.user import User
 
 from app.schemas.review import ReviewCreate
+
+from app.dependencies import get_current_user
 
 from sqlalchemy import func
 
@@ -32,12 +36,16 @@ def get_db():
 @router.post("/reviews")
 def create_review(
     review: ReviewCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
+
+    if review.reviewer_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes crear una reseña en nombre de otro usuario")
 
     new_review = Review(
         job_id=review.job_id,
-        reviewer_id=review.reviewer_id,
+        reviewer_id=current_user.id,
         reviewed_user_id=review.reviewed_user_id,
         rating=review.rating,
         comment=review.comment

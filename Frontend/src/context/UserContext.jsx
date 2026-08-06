@@ -7,6 +7,10 @@ export function UserProvider({ children }) {
     JSON.parse(localStorage.getItem("currentUser")) || null,
   );
 
+  const [token, setToken] = useState(
+    localStorage.getItem("token") || null,
+  );
+
   // 🔐 LOGIN
   const loginUser = async (email, password) => {
     try {
@@ -28,14 +32,25 @@ export function UserProvider({ children }) {
       }
 
       localStorage.setItem("currentUser", JSON.stringify(data.user));
+      localStorage.setItem("token", data.access_token);
 
       setUser(data.user);
+      setToken(data.access_token);
 
       return true;
     } catch (error) {
       console.error(error);
       return false;
     }
+  };
+
+  // 🔐 GUARDAR SESIÓN (login o registro)
+  const loginWithToken = (userData, accessToken) => {
+    localStorage.setItem("currentUser", JSON.stringify(userData));
+    localStorage.setItem("token", accessToken);
+
+    setUser(userData);
+    setToken(accessToken);
   };
 
   // 💾 GUARDAR PERFIL
@@ -49,11 +64,15 @@ export function UserProvider({ children }) {
   // 🚪 LOGOUT
   const logout = () => {
     localStorage.removeItem("currentUser");
+    localStorage.removeItem("token");
     setUser(null);
+    setToken(null);
   };
 
   return (
-    <UserContext.Provider value={{ user, loginUser, saveUser, logout }}>
+    <UserContext.Provider
+      value={{ user, token, loginUser, loginWithToken, saveUser, logout }}
+    >
       {children}
     </UserContext.Provider>
   );

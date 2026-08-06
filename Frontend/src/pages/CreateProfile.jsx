@@ -3,6 +3,7 @@ import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
+import { apiFetch } from "../api/client";
 
 function CreateProfile() {
   const { saveUser } = useContext(UserContext);
@@ -108,7 +109,7 @@ function CreateProfile() {
         formData.append("profile_image", profileImage);
       }
 
-      const response = await fetch(
+      const response = await apiFetch(
         `http://localhost:8000/auth/profile/${currentUser.email}`,
         {
           method: "PUT",

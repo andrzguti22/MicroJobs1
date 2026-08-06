@@ -1,10 +1,12 @@
 import Navbar from "../components/Navbar";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
+import { UserContext } from "../context/UserContext";
 
 function Register() {
   const navigate = useNavigate();
+  const { loginWithToken } = useContext(UserContext);
   const [showHint, setShowHint] = useState(false);
 
   const [form, setForm] = useState({
@@ -74,13 +76,7 @@ function Register() {
         return;
       }
 
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          name: form.name,
-          email,
-        }),
-      );
+      loginWithToken(data.user, data.access_token);
 
       alert("Usuario creado correctamente 🚀");
 
