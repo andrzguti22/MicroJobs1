@@ -102,7 +102,7 @@ function Register() {
             <div className="bg-white p-8 rounded-xl shadow w-[350px] dark:bg-slate-800">
               <h2 className="text-2xl font-bold mb-2 dark:text-white">Crear Cuenta</h2>
 
-              <p className="text-gray-500 mb-6">Regístrate para empezar</p>
+              <p className="text-gray-500 mb-6 dark:text-gray-300">Regístrate para empezar</p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
               {/* NOMBRE */}
@@ -153,7 +153,7 @@ function Register() {
                 </button>
               </form>
 
-              <p className="text-sm text-gray-500 mt-4">
+              <p className="text-sm text-gray-500 mt-4 dark:text-gray-300">
                 ¿Ya tienes cuenta?{" "}
                 <a href="/login" className="text-primary font-semibold">
                   Inicia sesión

@@ -97,7 +97,7 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
   return (
     <div className="fixed top-0 left-0 w-full bg-white shadow z-50 px-4 md:px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-700 dark:bg-slate-900 ">
       {/* IZQUIERDA */}
-      <Link to= "/dashboard" className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2 rounded-lg  ">
+      <Link to={currentUser ? "/dashboard" : "/"} className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2 rounded-lg  ">
         <img src="/logo.png" alt="logo" className="w-10 h-10 rounded-lg" />
 
         <h1 className="font-bold text-lg md:text-xl">
