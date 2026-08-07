@@ -93,8 +93,16 @@ function Register() {
       <PageWrapper>
         <div className="flex flex-1 pt-28">
           {/* IZQUIERDA */}
-          <div className="hidden md:flex w-1/2 items-center justify-center">
-            <img src="/Register.png" alt="register" className="w-[350px] rounded-lg" />
+          <div className="hidden md:flex w-1/2 items-center justify-center px-10">
+            <div className="relative w-full max-w-md aspect-[5/5] rounded-3xl overflow-hidden shadow-2xl">
+              <img
+                src="/Register.webp"
+                alt="register"
+                loading="lazy"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent" />
+            </div>
           </div>
 
           {/* DERECHA */}

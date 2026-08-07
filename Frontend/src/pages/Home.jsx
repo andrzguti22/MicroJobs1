@@ -10,14 +10,25 @@ function Home() {
       <Navbar />
       <PageWrapper>
         {/* HERO */}
-        <section className="flex flex-col md:flex-row items-center justify-between px-10 py-16">
-          <div className="max-w-lg">
-            <h1 className="text-4xl font-bold text-dark dark:text-white">
+        <section className="relative w-full h-[420px] sm:h-[480px] md:h-[560px] flex items-center overflow-hidden">
+          {/* Imagen de fondo */}
+          <img
+            src="/hero.webp"
+            alt="hero"
+            className="absolute inset-0 w-full h-full object-cover object-[50%_15%]"
+          />
+
+          {/* Degradado para legibilidad (se ajusta entre modo claro y oscuro) */}
+          <div className="absolute inset-0 bg-gradient-to-r from-dark/95 via-dark/70 to-dark/10 dark:from-black/95 dark:via-black/75 dark:to-black/20" />
+
+          {/* Contenido */}
+          <div className="relative z-10 max-w-lg px-6 md:px-14">
+            <h1 className="text-4xl font-bold text-white">
               Pequeños trabajos, <br />
               <span className="text-primary">grandes soluciones</span>
             </h1>
 
-            <p className="mt-4 text-gray-600 dark:text-gray-300">
+            <p className="mt-4 text-gray-200">
               Conecta con personas de tu zona que necesitan ayuda con tareas rápidas. Gana dinero o encuentra quien te
               ayude, de forma fácil, segura y local.{" "}
             </p>
@@ -32,20 +43,16 @@ function Home() {
 
               <button
                 onClick={() => navigate("/explore")}
-                className="bg-primary text-white px-6 py-3 rounded-lg hover:scale-105 hover:shadow-lg transition duration-300"
+                className="bg-white/10 text-white border border-white/30 px-6 py-3 rounded-lg hover:scale-105 hover:bg-white/20 backdrop-blur-sm transition duration-300"
               >
                 Explorar Trabajos
               </button>
             </div>
           </div>
-
-          <div className="mt-10 md:mt-0">
-            <img src="/hero.png" alt="hero" className="w-[400px] rounded-xl" />
-          </div>
         </section>
 
         {/* FEATURES */}
-        <section className="grid md:grid-cols-3 gap-6 px-10 pb-16">
+        <section className="grid md:grid-cols-3 gap-6 px-10 pt-12 pb-16">
           <div className="bg-white dark:bg-slate-700 p-4 rounded-xl shadow cursor-pointer transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-105 dark:hover:bg-slate-700 dark:hover:ring-2 dark:hover:ring-cyan-400/40 dark:hover:shadow-[0_0_30px_rgba(34,211,238,0.25)]">
             <div className="w-12 h-12 flex items-center justify-center bg-primary/10 rounded-full mb-4">
               <span className="text-primary text-xl">⚡</span>

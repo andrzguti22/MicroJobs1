@@ -37,8 +37,16 @@ function Login() {
       <Navbar />
       <PageWrapper>
         <div className="flex flex-1 pt-36">
-          <div className="hidden md:flex w-1/2 items-center justify-center">
-            <img src="/Login.png" alt="login" className="w-[350px] rounded-xl" />
+          <div className="hidden md:flex w-1/2 items-center justify-center px-10">
+            <div className="relative w-full max-w-md aspect-[5/5] rounded-3xl overflow-hidden shadow-2xl">
+              <img
+                src="/Login.webp"
+                alt="login"
+                loading="lazy"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent" />
+            </div>
           </div>
 
           <div className="w-full md:w-1/2 flex items-center justify-center">
