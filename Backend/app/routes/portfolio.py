@@ -1,5 +1,4 @@
 import os
-import shutil
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
@@ -10,14 +9,9 @@ from app.models.user import User
 from app.models.portfolio import PortfolioImage
 from app.schemas.portfolio import PortfolioImageOut
 from app.dependencies import get_current_user
+from app.utils.image_validation import validate_and_read_image
 
 router = APIRouter()
-
-# Extensiones de imagen permitidas
-ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp", "gif"}
-
-# Peso máximo por imagen: 5 MB
-MAX_FILE_SIZE = 5 * 1024 * 1024
 
 # Máximo de imágenes en el portafolio por usuario
 MAX_PORTFOLIO_IMAGES = 12
@@ -84,19 +78,7 @@ async def upload_portfolio_image(
             f"Solo puedes tener hasta {MAX_PORTFOLIO_IMAGES} imágenes en tu portafolio",
         )
 
-    extension = image.filename.split(".")[-1].lower()
-
-    if extension not in ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            400,
-            "Formato de imagen no permitido. Usa jpg, png, webp o gif",
-        )
-
-    # Validar tamaño del archivo
-    contents = await image.read()
-
-    if len(contents) > MAX_FILE_SIZE:
-        raise HTTPException(400, "La imagen no puede superar los 5MB")
+    contents, extension = await validate_and_read_image(image)
 
     folder = f"uploads/portfolio/{user_id}"
 

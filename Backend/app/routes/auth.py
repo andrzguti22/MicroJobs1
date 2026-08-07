@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Request
 import os
-import shutil
 import uuid
 import secrets
 from datetime import datetime, timedelta, timezone
@@ -15,6 +14,8 @@ from app.schemas.user import ForgotPasswordRequest, ResetPasswordRequest
 from app.utils.email_sender import send_password_reset_email
 from app.utils.jwt_handler import create_access_token
 from app.dependencies import get_current_user
+from app.rate_limiter import limiter
+from app.utils.image_validation import validate_and_read_image
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
@@ -32,7 +33,8 @@ def get_db():
 
 # 🟢 REGISTER
 @router.post("/register")
-def register(user: UserCreate, db: Session = Depends(get_db)):
+@limiter.limit("5/minute")
+def register(request: Request, user: UserCreate, db: Session = Depends(get_db)):
     exists = db.query(User).filter(User.email == user.email).first()
 
     if exists:
@@ -64,7 +66,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 # 🔵 LOGIN
 @router.post("/login")
-def login(user: UserLogin, db: Session = Depends(get_db)):
+@limiter.limit("10/minute")
+def login(request: Request, user: UserLogin, db: Session = Depends(get_db)):
     db_user = db.query(User).filter(
         User.email == user.email.lower()
     ).first()
@@ -128,16 +131,16 @@ async def update_profile(
 
     if profile_image:
 
-        os.makedirs("uploads/profile_images", exist_ok=True)
+        contents, extension = await validate_and_read_image(profile_image)
 
-        extension = profile_image.filename.split(".")[-1]
+        os.makedirs("uploads/profile_images", exist_ok=True)
 
         filename = f"{uuid.uuid4()}.{extension}"
 
         filepath = os.path.join("uploads/profile_images", filename)
 
         with open(filepath, "wb") as buffer:
-            shutil.copyfileobj(profile_image.file, buffer)
+            buffer.write(contents)
 
         user.profile_image = filepath.replace("\\", "/")
 
@@ -162,7 +165,8 @@ async def update_profile(
 
 # 🟠 SOLICITAR RECUPERACIÓN DE CONTRASEÑA
 @router.post("/forgot-password")
-def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+@limiter.limit("3/minute")
+def forgot_password(request: Request, payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(
         User.email == payload.email.lower()
@@ -215,9 +219,8 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     if expires_at < datetime.now(timezone.utc):
         raise HTTPException(400, "El enlace de recuperación ha expirado, solicita uno nuevo")
 
-    if len(payload.new_password) < 6:
-        raise HTTPException(400, "La contraseña debe tener al menos 6 caracteres")
-
+    # La fuerza de la contraseña ya se valida automáticamente en el schema
+    # ResetPasswordRequest (ver app/schemas/user.py) antes de llegar aquí.
     user.password = hash_password(payload.new_password)
     user.reset_token = None
     user.reset_token_expires = None

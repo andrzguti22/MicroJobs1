@@ -9,9 +9,9 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    conversation_id = Column(Integer, ForeignKey("conversations.id"))
+    conversation_id = Column(Integer, ForeignKey("conversations.id", ondelete="CASCADE"))
 
-    sender_id = Column(Integer, ForeignKey("users.id"))
+    sender_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
     text = Column(Text, nullable=False)
     

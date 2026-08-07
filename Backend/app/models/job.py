@@ -24,12 +24,12 @@ class Job(Base):
 
     owner_id = Column(
         Integer,
-        ForeignKey("users.id")
+        ForeignKey("users.id", ondelete="CASCADE")
     )
 
     assigned_to_id = Column(
         Integer,
-        ForeignKey("users.id"),
+        ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True
     )
 

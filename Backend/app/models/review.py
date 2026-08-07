@@ -19,17 +19,17 @@ class Review(Base):
 
     job_id = Column(
         Integer,
-        ForeignKey("jobs.id")
+        ForeignKey("jobs.id", ondelete="CASCADE")
     )
 
     reviewer_id = Column(
         Integer,
-        ForeignKey("users.id")
+        ForeignKey("users.id", ondelete="CASCADE")
     )
 
     reviewed_user_id = Column(
         Integer,
-        ForeignKey("users.id")
+        ForeignKey("users.id", ondelete="CASCADE")
     )
 
     rating = Column(Integer)

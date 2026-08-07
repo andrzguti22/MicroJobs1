@@ -1,7 +1,18 @@
+import os
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "postgresql://postgres:Andresg22@localhost:5432/microjobs"
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "Falta la variable de entorno DATABASE_URL. "
+        "Copia Backend/.env.example a Backend/.env y completa tu cadena de conexión."
+    )
 
 engine = create_engine(DATABASE_URL)
 
