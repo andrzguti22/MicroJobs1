@@ -18,15 +18,17 @@ class Application(Base):
 
     user_id = Column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE")
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True
     )
 
     job_id = Column(
         Integer,
-        ForeignKey("jobs.id", ondelete="CASCADE")
+        ForeignKey("jobs.id", ondelete="CASCADE"),
+        index=True
     )
 
-    status = Column(String, default="pending")
+    status = Column(String, default="pending", index=True)
 
     applicant = relationship(
         "User",

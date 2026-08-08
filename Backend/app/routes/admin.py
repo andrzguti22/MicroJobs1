@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, desc
 
 from app.database import SessionLocal
@@ -64,6 +64,21 @@ def list_users(
 ):
     users = db.query(User).order_by(desc(User.id)).all()
 
+    # Antes: len(u.jobs_created) y len(u.applications) por cada usuario
+    # -> 2 queries extra POR USUARIO (N+1). Ahora: 2 queries en total,
+    # sin importar cuántos usuarios haya.
+    jobs_counts = dict(
+        db.query(Job.owner_id, func.count(Job.id))
+        .group_by(Job.owner_id)
+        .all()
+    )
+
+    applications_counts = dict(
+        db.query(Application.user_id, func.count(Application.id))
+        .group_by(Application.user_id)
+        .all()
+    )
+
     return [
         {
             "id": u.id,
@@ -73,8 +88,8 @@ def list_users(
             "city": u.city,
             "phone": u.phone,
             "profile_image": u.profile_image,
-            "jobs_created": len(u.jobs_created),
-            "applications": len(u.applications),
+            "jobs_created": jobs_counts.get(u.id, 0),
+            "applications": applications_counts.get(u.id, 0),
         }
         for u in users
     ]
@@ -141,13 +156,25 @@ def list_jobs(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin),
 ):
-    jobs = db.query(Job).order_by(desc(Job.id)).all()
+    # Antes: 1 query de owner + len(job.applications) POR CADA trabajo (N+1).
+    # Ahora: joinedload trae el owner en la misma query, y el conteo de
+    # postulaciones se hace en 1 sola query agrupada.
+    jobs = (
+        db.query(Job)
+        .options(joinedload(Job.owner))
+        .order_by(desc(Job.id))
+        .all()
+    )
+
+    applications_counts = dict(
+        db.query(Application.job_id, func.count(Application.id))
+        .group_by(Application.job_id)
+        .all()
+    )
 
     result = []
 
     for job in jobs:
-        owner = db.query(User).filter(User.id == job.owner_id).first()
-
         result.append({
             "id": job.id,
             "title": job.title,
@@ -155,8 +182,8 @@ def list_jobs(
             "price": float(job.price) if job.price is not None else 0,
             "status": job.status,
             "owner_id": job.owner_id,
-            "owner_name": owner.name if owner else "Usuario eliminado",
-            "applications_count": len(job.applications),
+            "owner_name": job.owner.name if job.owner else "Usuario eliminado",
+            "applications_count": applications_counts.get(job.id, 0),
             "created_at": job.created_at,
         })
 

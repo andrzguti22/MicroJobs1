@@ -17,17 +17,20 @@ class Conversation(Base):
 
     user_one_id = Column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE")
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True
     )
 
     user_two_id = Column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE")
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True
     )
 
     last_message = Column(Text, nullable=True)
 
     updated_at = Column(
         DateTime(timezone=True),
-        server_default=func.now()
+        server_default=func.now(),
+        onupdate=func.now()  # antes no se actualizaba al llegar un mensaje nuevo
     )

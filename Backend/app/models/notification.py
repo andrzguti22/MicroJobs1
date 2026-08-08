@@ -12,7 +12,8 @@ class Notification(Base):
 
     user_id = Column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE")
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True
     )
 
     text = Column(String, nullable=False)

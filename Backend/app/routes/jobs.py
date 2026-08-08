@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import desc, func, or_
 
 from app.database import SessionLocal
 
@@ -29,35 +29,100 @@ def get_db():
 
 
 # =========================
-# GET ALL JOBS
+# GET ALL JOBS (paginado + filtros)
 # =========================
 @router.get("/jobs")
-def get_jobs(db: Session = Depends(get_db)):
+def get_jobs(
+    skip: int = Query(0, ge=0, description="Cuántos resultados saltar"),
+    limit: int = Query(20, ge=1, le=100, description="Tamaño de página (máx. 100)"),
+    search: str | None = Query(None, description="Busca en título y descripción"),
+    location: str | None = Query(None, description="Filtra por ubicación (coincidencia parcial)"),
+    min_price: float | None = Query(None, ge=0),
+    max_price: float | None = Query(None, ge=0),
+    status: str | None = Query(
+        None,
+        description="Filtra por estado exacto. 'all' = sin filtro. Por defecto, excluye 'finished'."
+    ),
+    sort: str = Query(
+        "recent",
+        description="'recent' (más nuevos primero), 'price_asc' o 'price_desc'"
+    ),
+    db: Session = Depends(get_db),
+):
 
-    jobs = db.query(Job).order_by(desc(Job.id)).all()
+    query = db.query(Job)
+
+    # ---- estado ----
+    if status == "all":
+        pass
+    elif status:
+        query = query.filter(Job.status == status)
+    else:
+        # comportamiento por defecto de "Explorar trabajos": no mostrar finalizados
+        query = query.filter(Job.status != "finished")
+
+    # ---- búsqueda de texto (título o descripción) ----
+    if search:
+        like = f"%{search.strip()}%"
+        query = query.filter(
+            or_(Job.title.ilike(like), Job.description.ilike(like))
+        )
+
+    # ---- ubicación ----
+    if location:
+        query = query.filter(Job.location.ilike(f"%{location.strip()}%"))
+
+    # ---- rango de precio ----
+    if min_price is not None:
+        query = query.filter(Job.price >= min_price)
+
+    if max_price is not None:
+        query = query.filter(Job.price <= max_price)
+
+    total = query.count()
+
+    # ---- orden ----
+    if sort == "price_asc":
+        query = query.order_by(Job.price.asc())
+    elif sort == "price_desc":
+        query = query.order_by(Job.price.desc())
+    else:
+        query = query.order_by(desc(Job.id))
+
+    jobs = (
+        query
+        .options(joinedload(Job.assigned_user))  # evita 1 query extra por trabajo
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+    job_ids = [job.id for job in jobs]
+
+    # 1 sola query para contar postulaciones de TODOS los trabajos de esta página,
+    # en vez de 1 query por trabajo (antes: N+1)
+    counts_map = {}
+    if job_ids:
+        counts = (
+            db.query(Application.job_id, func.count(Application.id))
+            .filter(Application.job_id.in_(job_ids))
+            .group_by(Application.job_id)
+            .all()
+        )
+        counts_map = dict(counts)
 
     result = []
 
     for job in jobs:
 
-        applications_count = db.query(Application).filter(
-            Application.job_id == job.id
-        ).count()
-
         assigned_user = None
 
-        if job.assigned_to_id:
-
-            user = db.query(User).filter(
-                User.id == job.assigned_to_id
-            ).first()
-
-            if user:
-                assigned_user = {
-                    "id": user.id,
-                    "name": user.name,
-                    "email": user.email,
-                }
+        if job.assigned_user:
+            assigned_user = {
+                "id": job.assigned_user.id,
+                "name": job.assigned_user.name,
+                "email": job.assigned_user.email,
+            }
 
         result.append({
             "id": job.id,
@@ -69,11 +134,17 @@ def get_jobs(db: Session = Depends(get_db)):
             "owner_id": job.owner_id,
             "assigned_to_id": job.assigned_to_id,
             "assignedTo": assigned_user,
-            "applicationsCount": applications_count,
+            "applicationsCount": counts_map.get(job.id, 0),
             "created_at": job.created_at
         })
 
-    return result
+    return {
+        "items": result,
+        "total": total,
+        "skip": skip,
+        "limit": limit,
+        "has_more": skip + limit < total,
+    }
 
 
 # =========================
@@ -171,9 +242,24 @@ def create_job(
 @router.get("/jobs/user/{user_id}")
 def get_user_jobs(user_id: int, db: Session = Depends(get_db)):
 
-    jobs = db.query(Job).filter(
-        Job.owner_id == user_id
-    ).all()
+    jobs = (
+        db.query(Job)
+        .filter(Job.owner_id == user_id)
+        .order_by(desc(Job.id))
+        .all()
+    )
+
+    job_ids = [job.id for job in jobs]
+
+    counts_map = {}
+    if job_ids:
+        counts = (
+            db.query(Application.job_id, func.count(Application.id))
+            .filter(Application.job_id.in_(job_ids))
+            .group_by(Application.job_id)
+            .all()
+        )
+        counts_map = dict(counts)
 
     result = []
 
@@ -188,7 +274,7 @@ def get_user_jobs(user_id: int, db: Session = Depends(get_db)):
             "status": job.status,
             "owner_id": job.owner_id,
             "assigned_to_id": job.assigned_to_id,
-            "applicationsCount": len(job.applications)
+            "applicationsCount": counts_map.get(job.id, 0)
         })
 
     return result
@@ -294,4 +380,3 @@ def get_job_history(
         ).all()
 
         return history
-

@@ -20,17 +20,19 @@ class Job(Base):
 
     price = Column(Numeric(12, 2))
 
-    status = Column(String, default="active")
+    status = Column(String, default="active", index=True)
 
     owner_id = Column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE")
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True
     )
 
     assigned_to_id = Column(
         Integer,
         ForeignKey("users.id", ondelete="SET NULL"),
-        nullable=True
+        nullable=True,
+        index=True
     )
 
     owner = relationship(
@@ -57,5 +59,6 @@ class Job(Base):
 
     updated_at = Column(
         DateTime(timezone=True),
-        server_default=func.now()
+        server_default=func.now(),
+        onupdate=func.now()  # antes faltaba: el campo nunca se actualizaba solo
     )

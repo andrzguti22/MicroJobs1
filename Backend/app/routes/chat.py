@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from app.database import SessionLocal
 
@@ -117,34 +118,63 @@ def get_user_conversations(
         (Conversation.user_two_id == user_id)
     ).all()
 
+    conversation_ids = [c.id for c in conversations]
+
+    # Antes: por cada conversación se hacían 3 queries (otro usuario,
+    # último mensaje, mensajes sin leer) -> 3N+1 en total. Ahora: 3
+    # queries agregadas en total, sin importar cuántas conversaciones haya.
+
+    # 🔥 otros usuarios (batch)
+    other_user_ids = {
+        (convo.user_two_id if convo.user_one_id == user_id else convo.user_one_id)
+        for convo in conversations
+    }
+
+    other_users = {
+        u.id: u
+        for u in db.query(User).filter(User.id.in_(other_user_ids)).all()
+    } if other_user_ids else {}
+
+    # 🔥 último mensaje de cada conversación (1 query con DISTINCT ON)
+    last_messages = {}
+    if conversation_ids:
+        last_messages_query = (
+            db.query(Message)
+            .filter(Message.conversation_id.in_(conversation_ids))
+            .order_by(Message.conversation_id, Message.created_at.desc())
+            .distinct(Message.conversation_id)
+            .all()
+        )
+        last_messages = {m.conversation_id: m for m in last_messages_query}
+
+    # 🔥 mensajes sin leer por conversación (1 query agrupada)
+    unread_counts = {}
+    if conversation_ids:
+        unread_query = (
+            db.query(Message.conversation_id, func.count(Message.id))
+            .filter(
+                Message.conversation_id.in_(conversation_ids),
+                Message.sender_id != user_id,
+                Message.is_read == False,
+            )
+            .group_by(Message.conversation_id)
+            .all()
+        )
+        unread_counts = dict(unread_query)
+
     result = []
 
     for convo in conversations:
 
-        # 🔥 otro usuario
         other_user_id = (
             convo.user_two_id
             if convo.user_one_id == user_id
             else convo.user_one_id
         )
 
-        other_user = db.query(User).filter(
-            User.id == other_user_id
-        ).first()
+        other_user = other_users.get(other_user_id)
 
-        # 🔥 último mensaje
-        last_message = db.query(Message).filter(
-            Message.conversation_id == convo.id
-        ).order_by(
-            Message.created_at.desc()
-        ).first()
-
-        # 🔥 mensajes sin leer
-        unread_count = db.query(Message).filter(
-            Message.conversation_id == convo.id,
-            Message.sender_id != user_id,
-            Message.is_read == False
-        ).count()
+        last_message = last_messages.get(convo.id)
 
         updated_at = (
             last_message.created_at
@@ -169,13 +199,13 @@ def get_user_conversations(
 
             "updated_at": updated_at,
 
-            "unread_count": unread_count,
+            "unread_count": unread_counts.get(convo.id, 0),
 
             "other_user": {
                 "id": other_user.id,
                 "name": other_user.name,
                 "email": other_user.email
-            }
+            } if other_user else None
 
         })
 
@@ -278,19 +308,27 @@ def get_messages(
         Message.conversation_id == conversation_id
     ).order_by(Message.created_at.asc()).all()
 
+    # Antes: 1 query por mensaje para buscar el nombre del remitente (N+1).
+    # Con historiales largos esto se nota mucho. Ahora: 1 sola query trae
+    # a todos los remitentes distintos del hilo completo.
+    sender_ids = {msg.sender_id for msg in messages}
+
+    senders = {
+        u.id: u
+        for u in db.query(User).filter(User.id.in_(sender_ids)).all()
+    } if sender_ids else {}
+
     result = []
 
     for msg in messages:
 
-        user = db.query(User).filter(
-            User.id == msg.sender_id
-        ).first()
+        sender = senders.get(msg.sender_id)
 
         result.append({
             "id": msg.id,
             "text": msg.text,
             "sender_id": msg.sender_id,
-            "sender_name": user.name if user else "Usuario",
+            "sender_name": sender.name if sender else "Usuario",
             "created_at": msg.created_at,
             "is_read": msg.is_read
         })

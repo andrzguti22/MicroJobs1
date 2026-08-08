@@ -28,12 +28,14 @@ function Dashboard() {
   const [averageRating, setAverageRating] = useState(0);
 
   // =====================================
-  // 🔥 CARGAR TRABAJOS
+  // 🔥 CARGAR TRABAJOS (solo los del usuario, no todos los de la plataforma)
   // =====================================
   useEffect(() => {
+    if (!user?.id) return;
+
     const fetchJobs = async () => {
       try {
-        const response = await apiFetch("http://localhost:8000/jobs");
+        const response = await apiFetch(`http://localhost:8000/jobs/user/${user.id}`);
 
         if (!response.ok) {
           throw new Error("Error cargando trabajos");
@@ -50,7 +52,7 @@ function Dashboard() {
     };
 
     fetchJobs();
-  }, []);
+  }, [user?.id]);
 
   
 
@@ -132,9 +134,9 @@ function Dashboard() {
     }
   };
   // =====================================
-  // 🔥 USER JOBS
+  // 🔥 USER JOBS (ya vienen filtrados por el backend)
   // =====================================
-  const userJobs = jobs.filter((job) => Number(job.owner_id) === Number(user?.id));
+  const userJobs = jobs;
 
   // =====================================
   // 🔥 STATS

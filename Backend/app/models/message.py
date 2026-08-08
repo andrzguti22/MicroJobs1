@@ -9,7 +9,7 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    conversation_id = Column(Integer, ForeignKey("conversations.id", ondelete="CASCADE"))
+    conversation_id = Column(Integer, ForeignKey("conversations.id", ondelete="CASCADE"), index=True)
 
     sender_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
 
