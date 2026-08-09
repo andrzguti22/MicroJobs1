@@ -4,11 +4,16 @@ import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import JobSkeleton from "../components/JobSkeleton";
 import { apiFetch } from "../api/client";
+import { useToast } from "../context/ToastContext";
+import { useConfirm } from "../context/ConfirmContext";
 
 function MyJobs() {
   const [activeJobs, setActiveJobs] = useState([]);
   const [inProgressJobs, setInProgressJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const { showToast } = useToast();
+  const confirm = useConfirm();
 
   const navigate = useNavigate();
 
@@ -65,7 +70,11 @@ function MyJobs() {
   // 🔥 FINALIZAR TRABAJO
   const handleFinish = async (job) => {
     try {
-      const confirmFinish = window.confirm("¿Deseas finalizar este trabajo?");
+      const confirmFinish = await confirm({
+        title: "¿Deseas finalizar este trabajo?",
+        message: "Podrás calificar al trabajador justo después.",
+        confirmText: "Finalizar",
+      });
 
       if (!confirmFinish) return;
 
@@ -86,7 +95,7 @@ function MyJobs() {
     } catch (error) {
       console.error(error);
 
-      alert("No fue posible finalizar el trabajo");
+      showToast("No fue posible finalizar el trabajo", "error");
     }
   };
 

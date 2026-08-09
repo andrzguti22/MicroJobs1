@@ -6,9 +6,11 @@ import JobApplicationSkeleton from "../components/JobApplicationSkeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import Avatar from "../components/Avatar";
 import { apiFetch } from "../api/client";
+import { useToast } from "../context/ToastContext";
 
 function JobApplications() {
   const { jobId } = useParams();
+  const { showToast } = useToast();
 
   const navigate = useNavigate();
 
@@ -102,7 +104,7 @@ function JobApplications() {
     } catch (error) {
       console.error(error);
 
-      alert("Error actualizando postulación");
+      showToast("Error actualizando postulación", "error");
     }
   };
 
@@ -137,7 +139,7 @@ function JobApplications() {
     } catch (error) {
       console.error(error);
 
-      alert("Error abriendo chat");
+      showToast("Error abriendo chat", "error");
     }
   };
 

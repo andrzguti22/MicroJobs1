@@ -3,6 +3,8 @@ from sqlalchemy import Integer
 from sqlalchemy import Text
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import CheckConstraint
+from sqlalchemy import UniqueConstraint
 
 from sqlalchemy.sql import func
 
@@ -14,6 +16,13 @@ from app.database import Base
 class Review(Base):
 
     __tablename__ = "reviews"
+
+    __table_args__ = (
+        CheckConstraint("rating BETWEEN 1 AND 5", name="ck_review_rating_range"),
+        # Un mismo usuario no puede calificar el mismo trabajo dos veces
+        # (antes solo se validaba en Python, con condición de carrera posible)
+        UniqueConstraint("job_id", "reviewer_id", name="uq_review_job_reviewer"),
+    )
 
     id = Column(Integer, primary_key=True)
 

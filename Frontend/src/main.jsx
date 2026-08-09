@@ -4,18 +4,21 @@ import App from "./App.jsx"
 import "./index.css"
 import { BrowserRouter } from "react-router-dom"
 import { UserProvider } from "./context/UserContext"
-import { ApplicationProvider } from "./context/ApplicationContext"
 import { ThemeProvider } from "./context/ThemeContext";
+import { ToastProvider } from "./context/ToastContext";
+import { ConfirmProvider } from "./context/ConfirmContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <UserProvider>
-          <ApplicationProvider>
-            <App />
-          </ApplicationProvider>
-        </UserProvider>
+        <ToastProvider>
+          <ConfirmProvider>
+            <UserProvider>
+              <App />
+            </UserProvider>
+          </ConfirmProvider>
+        </ToastProvider>
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>

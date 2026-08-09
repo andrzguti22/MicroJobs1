@@ -3,9 +3,11 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import { apiFetch } from "../api/client";
+import { useToast } from "../context/ToastContext";
 
 function Review() {
   const { jobId } = useParams();
+  const { showToast } = useToast();
 
   const location = useLocation();
 
@@ -24,12 +26,12 @@ function Review() {
   const handleSubmit = async () => {
     try {
       if (!reviewedUserId) {
-        alert("No se encontró el usuario a calificar");
+        showToast("No se encontró el usuario a calificar", "error");
         return;
       }
 
       if (comment.trim().length < 5) {
-        alert("Escribe un comentario de al menos 5 caracteres");
+        showToast("Escribe un comentario de al menos 5 caracteres", "error");
         return;
       }
 
@@ -57,17 +59,19 @@ function Review() {
         }),
       });
 
+      const data = await response.json().catch(() => null);
+
       if (!response.ok) {
-        throw new Error("Error creando reseña");
+        throw new Error(data?.detail || "Error creando reseña");
       }
 
-      alert("⭐ Reseña enviada correctamente");
+      showToast("⭐ Reseña enviada correctamente", "success");
 
       navigate("/job-history");
     } catch (error) {
       console.error(error);
 
-      alert("Error enviando la reseña");
+      showToast(error.message || "Error enviando la reseña", "error");
     } finally {
       setLoading(false);
     }

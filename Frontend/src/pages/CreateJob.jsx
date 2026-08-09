@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import { apiFetch } from "../api/client";
+import { useToast } from "../context/ToastContext";
 
 function CreateJob() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     title: "",
@@ -25,7 +27,7 @@ function CreateJob() {
     e.preventDefault();
 
     if (!form.title || !form.description || !form.location || !form.price) {
-      alert("Completa todos los campos");
+      showToast("Completa todos los campos", "error");
       return;
     }
 
@@ -46,17 +48,17 @@ function CreateJob() {
       const data = await response.json();
 
       if (!response.ok) {
-        alert(data.detail);
+        showToast(data.detail || "No se pudo publicar el trabajo", "error");
         return;
       }
 
-      alert("Trabajo publicado 🚀");
+      showToast("Trabajo publicado 🚀", "success");
 
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
 
-      alert("Debes iniciar sesión");
+      showToast("Debes iniciar sesión", "error");
     }
   };
 

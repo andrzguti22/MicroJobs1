@@ -1,9 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { ApplicationContext } from "../context/ApplicationContext";
 
 function JobCard({ job }) {
-  const { applyToJob } = useContext(ApplicationContext);
   const navigate = useNavigate();
 
   const timeAgo = (dateString) => {

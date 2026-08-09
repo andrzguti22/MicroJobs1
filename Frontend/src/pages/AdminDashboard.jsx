@@ -4,6 +4,7 @@ import { UserContext } from "../context/UserContext";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import { apiFetch, API_URL } from "../api/client";
+import { useConfirm } from "../context/ConfirmContext";
 import {
   Users,
   Briefcase,
@@ -16,6 +17,7 @@ import {
 
 function AdminDashboard() {
   const { user, logout } = useContext(UserContext);
+  const confirm = useConfirm();
 
   const navigate = useNavigate();
 
@@ -99,7 +101,14 @@ function AdminDashboard() {
   // 🔥 ELIMINAR USUARIO
   // =====================================
   const handleDeleteUser = async (userId) => {
-    if (!window.confirm("¿Eliminar este usuario? Esta acción no se puede deshacer.")) {
+    const confirmed = await confirm({
+      title: "¿Eliminar este usuario?",
+      message: "Esta acción no se puede deshacer.",
+      confirmText: "Eliminar",
+      danger: true,
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -129,7 +138,13 @@ function AdminDashboard() {
   // 🔥 ELIMINAR TRABAJO
   // =====================================
   const handleDeleteJob = async (jobId) => {
-    if (!window.confirm("¿Eliminar este trabajo?")) return;
+    const confirmed = await confirm({
+      title: "¿Eliminar este trabajo?",
+      confirmText: "Eliminar",
+      danger: true,
+    });
+
+    if (!confirmed) return;
 
     setActionError("");
     setPendingAction(`del-job-${jobId}`);

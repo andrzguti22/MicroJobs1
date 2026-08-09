@@ -3,9 +3,11 @@ import DashboardHeader from "../components/DashboardHeader";
 import { useEffect, useState } from "react";
 import PageWrapper from "../components/PageWrapper";
 import { apiFetch } from "../api/client";
+import { useToast } from "../context/ToastContext";
 
 function JobDetail() {
   const { id } = useParams();
+  const { showToast } = useToast();
 
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,13 +42,13 @@ function JobDetail() {
   const handleApply = async () => {
     // validar login
     if (!currentUser) {
-      alert("Debes iniciar sesión");
+      showToast("Debes iniciar sesión", "error");
       return;
     }
 
     // 🚫 evitar aplicar a su propio trabajo
     if (Number(job.owner_id) === Number(currentUser.id)) {
-      alert("No puedes aplicar a tu propio trabajo");
+      showToast("No puedes aplicar a tu propio trabajo", "error");
       return;
     }
 
@@ -68,10 +70,10 @@ function JobDetail() {
         throw new Error(data.detail || "Error aplicando");
       }
 
-      alert("Postulación enviada 🚀");
+      showToast("Postulación enviada 🚀", "success");
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      showToast(error.message, "error");
     }
   };
 

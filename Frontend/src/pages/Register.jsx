@@ -3,10 +3,12 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 import { UserContext } from "../context/UserContext";
+import { useToast } from "../context/ToastContext";
 
 function Register() {
   const navigate = useNavigate();
   const { loginWithToken } = useContext(UserContext);
+  const { showToast } = useToast();
   const [showHint, setShowHint] = useState(false);
 
   const [form, setForm] = useState({
@@ -78,12 +80,12 @@ function Register() {
 
       loginWithToken(data.user, data.access_token);
 
-      alert("Usuario creado correctamente 🚀");
+      showToast("Usuario creado correctamente 🚀", "success");
 
       navigate("/create-profile");
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showToast("Error conectando con el servidor", "error");
     }
   };
 
