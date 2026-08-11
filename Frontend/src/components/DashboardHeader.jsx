@@ -3,15 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { Sun, Moon, Bell, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
-import { apiFetch } from "../api/client";
 import EmailVerificationBanner from "./EmailVerificationBanner";
+import { useNotifications, useMarkAllNotificationsRead } from "../hooks/useNotifications";
 
 function DashboardHeader({ showBell = false, showBackButton = true, backTo = null }) {
   const navigate = useNavigate();
 
   const [currentUser, setCurrentUser] = useState(null);
-
-  const [notifications, setNotifications] = useState([]);
 
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -67,57 +65,15 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
   }, []);
 
   // =====================================
-  // 🔥 NOTIFICACIONES
+  // 🔥 NOTIFICACIONES (React Query: caché compartida con Notifications.jsx,
+  // sin importar cuántos componentes usen este hook a la vez, se hace
+  // una sola request de polling, no una por componente)
   // =====================================
-  const loadNotifications = async () => {
-    try {
-      if (!currentUser || !showBell) return;
+  const { data: notifications = [] } = useNotifications(
+    showBell ? currentUser?.id : undefined
+  );
 
-      const response = await apiFetch(`http://localhost:8000/notifications/${currentUser.id}`);
-
-      if (!response.ok) {
-        throw new Error("Error cargando notificaciones");
-      }
-
-      const data = await response.json();
-
-      setNotifications(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // =====================================
-  // 🔥 AUTO REFRESH
-  // =====================================
-  useEffect(() => {
-    if (!currentUser || !showBell) return;
-
-    loadNotifications();
-
-    const interval = setInterval(() => {
-      loadNotifications();
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [currentUser, showBell]);
-
-  // =====================================
-  // 🔥 MARCAR LEÍDAS
-  // =====================================
-  const markNotificationsAsRead = async () => {
-    try {
-      if (!currentUser) return;
-
-      await apiFetch(`http://localhost:8000/notifications/read-all/${currentUser.id}`, {
-        method: "PUT",
-      });
-
-      loadNotifications();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const markAllAsRead = useMarkAllNotificationsRead(currentUser?.id);
 
   // =====================================
   // 🔥 BOTÓN VOLVER
@@ -176,7 +132,7 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
               onClick={() => {
                 setShowNotifications(!showNotifications);
 
-                markNotificationsAsRead();
+                markAllAsRead.mutate();
               }}
               className="relative text-2xl"
             >
