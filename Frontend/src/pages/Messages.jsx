@@ -94,7 +94,7 @@ function Messages() {
   }
 
   return (
-    <div className="bg-secondary min-h-screen pt-20 dark:bg-slate-900">
+    <div className="bg-secondary min-h-screen dark:bg-slate-900">
       <DashboardHeader />
 
       <PageWrapper>

@@ -147,11 +147,11 @@ function CreateProfile() {
   };
 
   return (
-    <div className="bg-secondary min-h-screen pt-20 dark:bg-slate-900">
+    <div className="bg-secondary min-h-screen dark:bg-slate-900">
       <DashboardHeader />
 
       <PageWrapper>
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-8 mt-10 rounded-2xl shadow dark:bg-slate-800">
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-4 sm:p-6 md:p-8 mt-10 rounded-2xl shadow dark:bg-slate-800">
           <div className="flex flex-col items-center mb-10">
             <label htmlFor="profileImage" className="cursor-pointer group">
               <img
@@ -333,7 +333,7 @@ function CreateProfile() {
               )}
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full">
               <input
                 value={skillInput}
                 onChange={(e) => setSkillInput(e.target.value)}

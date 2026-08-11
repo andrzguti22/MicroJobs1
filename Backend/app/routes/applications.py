@@ -32,6 +32,12 @@ def create_application(
     current_user: User = Depends(get_current_user),
 ):
 
+    if not current_user.email_verified and current_user.role != "admin":
+        raise HTTPException(
+            403,
+            "Debes verificar tu correo electrónico antes de postularte a un trabajo",
+        )
+
     # 🔍 validar trabajo
     job = db.query(Job).filter(
         Job.id == application.job_id

@@ -43,7 +43,7 @@ function Profile() {
 
   if (loading) {
     return (
-      <div className="bg-secondary min-h-screen pt-20 dark:bg-slate-900">
+      <div className="bg-secondary min-h-screen dark:bg-slate-900">
         <DashboardHeader />
 
         <PageWrapper>
@@ -60,7 +60,7 @@ function Profile() {
   }
 
   return (
-    <div className="bg-secondary min-h-screen pt-20 dark:bg-slate-900">
+    <div className="bg-secondary min-h-screen dark:bg-slate-900">
       <DashboardHeader />
       <PageWrapper>
         <div className="max-w-4xl mx-auto bg-white p-8 mt-10 rounded-xl shadow dark:bg-slate-800">

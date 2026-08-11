@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -34,6 +34,13 @@ class User(Base):
     reset_token = Column(String, nullable=True, index=True)
 
     reset_token_expires = Column(DateTime(timezone=True), nullable=True)
+
+    # 🔥 verificación de email
+    email_verified = Column(Boolean, default=False, nullable=False)
+
+    email_verification_token = Column(String, nullable=True, index=True)
+
+    email_verification_token_expires = Column(DateTime(timezone=True), nullable=True)
 
     # 🔥 trabajos creados
     jobs_created = relationship(
@@ -75,4 +82,3 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan"
     )
-    

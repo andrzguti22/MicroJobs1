@@ -164,22 +164,23 @@ function Dashboard() {
   ];
 
   return (
-    <div className="flex bg-secondary dark:bg-slate-900 min-h-screen">
+    <div className="bg-secondary dark:bg-slate-900 min-h-screen">
       {/* ===================================== */}
       {/* 🔥 HEADER */}
       {/* ===================================== */}
       <DashboardHeader showBell={true} showBackButton={false} />
 
+      <div className="flex">
       {/* ===================================== */}
       {/* 🔥 SIDEBAR */}
       {/* ===================================== */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-white rounded-lg border-r border-gray-50 dark:border-r-slate-500 p-6 shadow
+          app-sidebar left-0 w-64 bg-white rounded-lg border-r border-gray-50 dark:border-r-slate-500 p-6 shadow
           transform transition-transform duration-300 
           dark:bg-slate-800
           ${menuOpen ? "translate-x-0 z-50" : "-translate-x-full"}
-          md:translate-x-0 md:relative md:mt-10 md:flex md:z-30 flex-col justify-between
+          md:translate-x-0 md:flex md:z-30 flex-col justify-between
         `}
       >
         {/* 🔥 CERRAR */}
@@ -273,7 +274,7 @@ function Dashboard() {
       {/* ===================================== */}
       {/* 🔥 CONTENIDO */}
       {/* ===================================== */}
-      <main className="flex-1 p-6 mt-20">
+      <main className="flex-1 p-6">
         {/* 🔥 MOBILE MENU */}
         <button onClick={() => setMenuOpen(true)} className="md:hidden text-2xl mb-4 dark:text-white">
           ☰
@@ -372,6 +373,7 @@ function Dashboard() {
           </div>
         </div>
       </main>
+      </div>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import HowItWorks from "./pages/HowItWorks";
 import CreateProfile from "./pages/CreateProfile";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 
 // 🔒 PRIVADO
 import Dashboard from "./pages/Dashboard";
@@ -41,6 +42,7 @@ function App() {
       <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="/verify-email/:token" element={<VerifyEmail />} />
 
       {/* 🔒 PRIVADAS (requieren sesión iniciada) */}
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

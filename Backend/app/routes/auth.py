@@ -10,8 +10,8 @@ from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin
 from app.utils.security import hash_password, verify_password
 from app.schemas.user import UserProfile
-from app.schemas.user import ForgotPasswordRequest, ResetPasswordRequest
-from app.utils.email_sender import send_password_reset_email
+from app.schemas.user import ForgotPasswordRequest, ResetPasswordRequest, VerifyEmailRequest
+from app.utils.email_sender import send_password_reset_email, send_verification_email
 from app.utils.jwt_handler import create_access_token
 from app.dependencies import get_current_user
 from app.rate_limiter import limiter
@@ -20,6 +20,8 @@ from app.utils.image_validation import validate_and_read_image
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
 RESET_TOKEN_EXPIRE_MINUTES = 30
+
+EMAIL_VERIFICATION_EXPIRE_HOURS = 24
 
 router = APIRouter()
 
@@ -40,15 +42,28 @@ def register(request: Request, user: UserCreate, db: Session = Depends(get_db)):
     if exists:
         raise HTTPException(400, "El usuario ya existe")
 
+    verification_token = secrets.token_urlsafe(32)
+
     new_user = User(
         name=user.name,
         email=user.email.lower(),
-        password=hash_password(user.password)
+        password=hash_password(user.password),
+        email_verified=False,
+        email_verification_token=verification_token,
+        email_verification_token_expires=datetime.now(timezone.utc)
+        + timedelta(hours=EMAIL_VERIFICATION_EXPIRE_HOURS),
     )
 
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    verify_link = f"{FRONTEND_URL}/verify-email/{verification_token}"
+
+    # No bloqueamos el registro si el correo falla en enviarse (ej. SMTP
+    # no configurado en desarrollo); el usuario puede reenviarlo después
+    # desde /auth/resend-verification.
+    send_verification_email(new_user.email, new_user.name, verify_link)
 
     access_token = create_access_token(data={"sub": str(new_user.id)})
 
@@ -61,6 +76,7 @@ def register(request: Request, user: UserCreate, db: Session = Depends(get_db)):
             "name": new_user.name,
             "email": new_user.email,
             "role": new_user.role,
+            "email_verified": new_user.email_verified,
         },
     }
 
@@ -86,6 +102,7 @@ def login(request: Request, user: UserLogin, db: Session = Depends(get_db)):
             "email": db_user.email,
             "name": db_user.name,
             "role": db_user.role,
+            "email_verified": db_user.email_verified,
 
             "city": db_user.city,
             "phone": db_user.phone,
@@ -153,6 +170,8 @@ async def update_profile(
             "id": user.id,
             "name": user.name,
             "email": user.email,
+            "role": user.role,
+            "email_verified": user.email_verified,
             "city": user.city,
             "phone": user.phone,
             "experience": user.experience,
@@ -228,3 +247,68 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     db.commit()
 
     return {"message": "Contraseña actualizada correctamente"}
+
+
+# 🟢 CONFIRMAR EMAIL
+@router.post("/verify-email")
+def verify_email(payload: VerifyEmailRequest, db: Session = Depends(get_db)):
+
+    user = db.query(User).filter(
+        User.email_verification_token == payload.token
+    ).first()
+
+    if not user:
+        raise HTTPException(400, "El enlace de verificación no es válido")
+
+    if user.email_verified:
+        return {"message": "Este correo ya estaba verificado"}
+
+    if not user.email_verification_token_expires:
+        raise HTTPException(400, "El enlace de verificación no es válido")
+
+    expires_at = user.email_verification_token_expires
+
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+    if expires_at < datetime.now(timezone.utc):
+        raise HTTPException(
+            400,
+            "El enlace de verificación ha expirado, solicita uno nuevo desde tu perfil",
+        )
+
+    user.email_verified = True
+    user.email_verification_token = None
+    user.email_verification_token_expires = None
+
+    db.commit()
+
+    return {"message": "Correo verificado correctamente"}
+
+
+# 🟠 REENVIAR CORREO DE VERIFICACIÓN
+@router.post("/resend-verification")
+@limiter.limit("3/minute")
+def resend_verification(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    if current_user.email_verified:
+        return {"message": "Tu correo ya está verificado"}
+
+    verification_token = secrets.token_urlsafe(32)
+
+    current_user.email_verification_token = verification_token
+    current_user.email_verification_token_expires = datetime.now(
+        timezone.utc
+    ) + timedelta(hours=EMAIL_VERIFICATION_EXPIRE_HOURS)
+
+    db.commit()
+
+    verify_link = f"{FRONTEND_URL}/verify-email/{verification_token}"
+
+    send_verification_email(current_user.email, current_user.name, verify_link)
+
+    return {"message": "Te reenviamos el correo de verificación"}

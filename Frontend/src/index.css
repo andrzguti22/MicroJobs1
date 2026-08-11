@@ -32,3 +32,24 @@
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+/* ============================================================
+   Sidebar de páginas con DashboardHeader (ej. Dashboard.jsx)
+   Se ancla a --app-header-height (medida en tiempo real por
+   DashboardHeader) en vez de un margen/top adivinado a mano.
+   En mobile es un cajón fijo debajo del header; en desktop
+   vuelve a su posición normal dentro del flujo.
+   ============================================================ */
+.app-sidebar {
+  position: fixed;
+  top: var(--app-header-height, 80px);
+  height: calc(100vh - var(--app-header-height, 80px));
+}
+
+@media (min-width: 768px) {
+  .app-sidebar {
+    position: relative;
+    top: auto;
+    height: auto;
+  }
+}

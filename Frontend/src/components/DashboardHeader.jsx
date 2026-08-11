@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { Sun, Moon, Bell, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
 import { apiFetch } from "../api/client";
+import EmailVerificationBanner from "./EmailVerificationBanner";
 
 function DashboardHeader({ showBell = false, showBackButton = true, backTo = null }) {
   const navigate = useNavigate();
@@ -15,6 +16,46 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
   const [showNotifications, setShowNotifications] = useState(false);
 
   const { darkMode, toggleTheme } = useTheme();
+
+  // =====================================
+  // 🔥 MEDIR EL BLOQUE FIJO (header + aviso de verificación si aparece)
+  // =====================================
+  // En vez de que cada página adivine un pt-20/pt-24 fijo, este componente
+  // mide su propia altura real (que cambia si el banner de verificación
+  // aparece o desaparece, o si su texto se parte en 2 líneas en mobile) y
+  // empuja el contenido de la página exactamente esa cantidad. Así nunca
+  // queda desincronizado.
+  const fixedRef = useRef(null);
+
+  const [fixedHeight, setFixedHeight] = useState(80);
+
+  useLayoutEffect(() => {
+    const node = fixedRef.current;
+
+    if (!node) return;
+
+    const updateHeight = () => {
+      const height = node.offsetHeight;
+
+      setFixedHeight(height);
+
+      // La exponemos como variable CSS global para que cualquier otro
+      // elemento fijo/posicionado de la app (ej. un sidebar propio de una
+      // página) pueda anclarse a "justo debajo del header" sin tener que
+      // adivinar un número — mismo problema, misma solución en un solo lugar.
+      document.documentElement.style.setProperty(
+        "--app-header-height",
+        `${height}px`
+      );
+    };
+
+    updateHeight();
+
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(node);
+
+    return () => observer.disconnect();
+  }, [currentUser]);
 
   // =====================================
   // 🔥 USER
@@ -95,7 +136,9 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
-    <div className="fixed top-0 left-0 w-full bg-white shadow z-50 px-4 md:px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-700 dark:bg-slate-900 ">
+    <>
+      <div ref={fixedRef} className="fixed top-0 left-0 w-full z-50">
+      <div className="bg-white shadow px-4 md:px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-slate-700 dark:bg-slate-900 ">
       {/* IZQUIERDA */}
       <Link to={currentUser ? "/dashboard" : "/"} className="flex items-center gap-3 bg-white dark:bg-slate-900 p-2 rounded-lg  ">
         <img src="/logo.png" alt="logo" className="w-10 h-10 rounded-lg" />
@@ -147,7 +190,10 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
 
             {/* DROPDOWN */}
             {showNotifications && (
-              <div className="fixed top-16 left-1/2 -translate-x-1/2 w-[95vw] max-w-sm md:absolute md:top-auto md:left-auto md:translate-x-0 md:right-0 md:w-80 bg-white shadow-xl rounded-xl p-3 border max-h-[70vh] overflow-y-auto z-[999] dark:bg-slate-700 dark:text-white dark:">
+              <div
+                className="fixed left-1/2 -translate-x-1/2 w-[95vw] max-w-sm md:absolute md:top-auto md:left-auto md:translate-x-0 md:right-0 md:w-80 bg-white shadow-xl rounded-xl p-3 border max-h-[70vh] overflow-y-auto z-[999] dark:bg-slate-700 dark:text-white dark:"
+                style={{ top: fixedHeight }}
+              >
                 <div className="flex justify-between items-center mb-3">
                   <h2 className="font-bold ">Notificaciones</h2>
 
@@ -196,7 +242,19 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
           </button>
         )}
       </div>
-    </div>
+      </div>
+
+      {/* Aviso de correo sin verificar: DENTRO del mismo bloque medido,
+          para que su altura (si aparece, o si su texto ocupa 2 líneas
+          en mobile) también se sume automáticamente al espacio reservado */}
+      <EmailVerificationBanner />
+      </div>
+
+      {/* Spacer: empuja el contenido real de la página exactamente lo que
+          ocupe el bloque fijo de arriba (header + aviso, si está visible).
+          Reemplaza los pt-20/pt-24 adivinados a mano que tenía cada página. */}
+      <div style={{ height: fixedHeight }} aria-hidden="true" />
+    </>
   );
 }
 

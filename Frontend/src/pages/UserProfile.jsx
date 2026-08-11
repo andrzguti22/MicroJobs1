@@ -54,7 +54,7 @@ function UserProfile() {
 
   if (loading) {
     return (
-      <div className="bg-secondary min-h-screen pt-20 dark:bg-slate-900">
+      <div className="bg-secondary min-h-screen dark:bg-slate-900">
         <DashboardHeader backTo={backTo} />
 
         <PageWrapper>
@@ -68,7 +68,7 @@ function UserProfile() {
 
   if (!user) {
     return (
-      <div className="bg-secondary min-h-screen pt-20 dark:bg-slate-900">
+      <div className="bg-secondary min-h-screen dark:bg-slate-900">
         <DashboardHeader backTo={backTo} />
 
         <PageWrapper>
@@ -81,7 +81,7 @@ function UserProfile() {
   }
 
   return (
-    <div className="bg-secondary min-h-screen pt-20 dark:bg-slate-900">
+    <div className="bg-secondary min-h-screen dark:bg-slate-900">
       <DashboardHeader backTo={backTo} />
       <PageWrapper>
         <div className="max-w-4xl mx-auto bg-white p-8 mt-10 rounded-xl shadow dark:bg-slate-800">

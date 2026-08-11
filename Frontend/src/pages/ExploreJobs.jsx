@@ -33,8 +33,15 @@ function buildQuery(filters, skip) {
 
 function ExploreJobs() {
   const [jobs, setJobs] = useState([]);
+
+  // 'loading' = SOLO la primerísima carga de la página (muestra skeleton).
+  // 'searching' = recargas por búsqueda/filtro (mantiene los resultados
+  // actuales visibles con un indicador sutil, en vez de reemplazarlos
+  // por skeletons cada vez que el usuario escribe o cambia un filtro).
   const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState("");
@@ -46,6 +53,7 @@ function ExploreJobs() {
   const [draftFilters, setDraftFilters] = useState(DEFAULT_FILTERS);
 
   const debounceRef = useRef(null);
+  const isFirstLoadRef = useRef(true);
 
   const fetchPage = async (skip, activeFilters) => {
     const query = buildQuery(activeFilters, skip);
@@ -59,7 +67,14 @@ function ExploreJobs() {
   };
 
   const loadFirstPage = async (activeFilters) => {
-    setLoading(true);
+    // Solo la primera carga real de la página usa el skeleton de pantalla
+    // completa. Las siguientes (búsqueda, filtros) usan 'searching'.
+    if (isFirstLoadRef.current) {
+      setLoading(true);
+    } else {
+      setSearching(true);
+    }
+
     setError("");
 
     try {
@@ -73,6 +88,8 @@ function ExploreJobs() {
       setError("No pudimos cargar los trabajos. Intenta de nuevo.");
     } finally {
       setLoading(false);
+      setSearching(false);
+      isFirstLoadRef.current = false;
     }
   };
 
@@ -84,6 +101,9 @@ function ExploreJobs() {
 
   // Búsqueda por texto: con debounce, para no pegarle al backend en cada tecla
   useEffect(() => {
+    // Evita disparar una búsqueda extra durante el montaje inicial
+    if (isFirstLoadRef.current) return;
+
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(() => {
@@ -131,7 +151,7 @@ function ExploreJobs() {
   ).length + (filters.sort !== "recent" ? 1 : 0);
 
   return (
-    <div className="bg-secondary min-h-screen pt-20 dark:bg-slate-900">
+    <div className="bg-secondary min-h-screen dark:bg-slate-900">
       <DashboardHeader />
 
       <PageWrapper>
@@ -156,6 +176,12 @@ function ExploreJobs() {
                 }
                 className="w-full pl-10 pr-4 py-3 border rounded-lg dark:bg-slate-800 dark:text-white dark:border-slate-700"
               />
+              {searching && (
+                <Loader2
+                  size={16}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 animate-spin"
+                />
+              )}
             </div>
 
             <button
@@ -286,7 +312,11 @@ function ExploreJobs() {
             </p>
           ) : (
             <>
-              <div className="grid md:grid-cols-2 gap-4">
+              <div
+                className={`grid md:grid-cols-2 gap-4 transition-opacity duration-200 ${
+                  searching ? "opacity-50" : "opacity-100"
+                }`}
+              >
                 {jobs.map((job, index) => (
                   <motion.div
                     key={job.id}
