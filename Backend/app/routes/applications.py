@@ -105,21 +105,29 @@ def get_my_applications(
         Application.id.desc()
     ).all()
 
+    job_ids = [a.job_id for a in applications]
+
+    jobs = {
+        job.id: job
+        for job in db.query(Job).filter(Job.id.in_(job_ids)).all()
+    } if job_ids else {}
+
     result = []
 
     for app in applications:
 
-        job = db.query(Job).filter(
-            Job.id == app.job_id
-        ).first()
+        job = jobs.get(app.job_id)
+
+        if not job:
+            continue
 
         result.append({
             "id": app.id,
             "status": app.status,
             "job_id": app.job_id,
-            "job_title": job.title if job else "Trabajo eliminado",
-            "location": job.location if job else "Sin ubicación",
-            "job_status": job.status if job else "deleted"
+            "job_title": job.title,
+            "location": job.location,
+            "job_status": job.status
         })
 
     return result
