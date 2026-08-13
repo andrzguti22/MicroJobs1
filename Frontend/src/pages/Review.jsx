@@ -125,7 +125,7 @@ function Review() {
             <div className="flex flex-col sm:flex-row gap-3 mt-6">
               <button
                 onClick={() => navigate("/job-history")}
-                className="w-full border border-gray-300 py-3 rounded-xl hover:bg-gray-100 hover:scale-105 hover:shadow-lg transition duration-300"
+                className="w-full border border-gray-300 py-3 rounded-xl  hover:scale-105 hover:shadow-lg transition duration-300 dark:text-gray-300"
               >
                 Cancelar
               </button>

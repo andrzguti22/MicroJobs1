@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import PageWrapper from "../components/PageWrapper";
@@ -12,7 +12,17 @@ function VerifyEmail() {
   const [status, setStatus] = useState("loading"); // loading | success | error
   const [message, setMessage] = useState("");
 
+  // El token de verificación se consume (se borra) la primera vez que se
+  // usa con éxito. En desarrollo, <StrictMode> ejecuta los useEffect dos
+  // veces a propósito para detectar efectos no idempotentes -- sin esta
+  // guardia, la 2da ejecución llegaría con el token ya borrado y
+  // mostraría "enlace no válido" aunque la verificación real sí funcionó.
+  const hasRunRef = useRef(false);
+
   useEffect(() => {
+    if (hasRunRef.current) return;
+    hasRunRef.current = true;
+
     const verify = async () => {
       try {
         const response = await fetch("http://localhost:8000/auth/verify-email", {

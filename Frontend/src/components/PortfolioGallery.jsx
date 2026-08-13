@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ImagePlus, Loader2, Trash2, X, ImageOff } from "lucide-react";
+import { ImagePlus, Loader2, Trash2, X, ImageOff, Image } from "lucide-react";
 import { apiFetch } from "../api/client";
 
 const API_URL = "http://localhost:8000";
@@ -121,8 +121,8 @@ function PortfolioGallery({ userId, editable = false }) {
   return (
     <div className="bg-gray-50 dark:bg-slate-700 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-600 mt-6">
       <div className="flex items-center justify-between mb-4 gap-3">
-        <h3 className="text-lg font-semibold dark:text-white">
-          🖼️ Portafolio de trabajos
+        <h3 className="text-lg font-semibold dark:text-white flex items-center gap-2">
+          <Image className="w-5 h-5"/> Portafolio de trabajos
         </h3>
 
         {editable && (

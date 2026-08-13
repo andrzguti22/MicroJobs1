@@ -6,6 +6,7 @@ import UserProfileSkeleton from "../components/UserProfileSkeleton";
 import Avatar from "../components/Avatar";
 import PortfolioGallery from "../components/PortfolioGallery";
 import { apiFetch } from "../api/client";
+import { MapPin, Phone, BriefcaseBusiness, Wrench, Star } from "lucide-react";
 
 function UserProfile() {
   const { id } = useParams();
@@ -90,7 +91,7 @@ function UserProfile() {
             <div>
               <h2 className="font-bold text-xl dark:text-gray-200">{user.name}</h2>
 
-              <p className="text-gray-500 dark:text-gray-300">📍 {user.city || "Sin ciudad"}</p>
+              <p className="text-gray-500 dark:text-gray-300 flex items-center gap-2"><MapPin className="w-5 h-5"/> {user.city || "Sin ciudad"}</p>
             </div>
           </div>
 
@@ -99,11 +100,11 @@ function UserProfile() {
           </p>
 
           <div className="mt-4 text-sm text-gray-500 dark:text-gray-300">
-            <p>📞 {user.phone || "Sin teléfono"}</p>
+            <p className="flex items-center gap-2"><Phone className="w-5 h-5" /> {user.phone || "Sin teléfono"}</p>
 
-            <p>💼 {user.experience || "Sin experiencia registrada"}</p>
+            <p className="flex items-center gap-2"><BriefcaseBusiness className="w-5 h-5" /> {user.experience || "Sin experiencia registrada"}</p>
           </div>
-          <h3 className="text-lg font-semibold mt-6 mb-2 dark:text-gray-200">🛠️ Habilidades</h3>
+          <h3 className="text-lg font-semibold mt-6 mb-2 dark:text-gray-200 flex items-center gap-2"><Wrench className="w-5 h-5"/>Habilidades</h3>
           <div className="mt-6 flex gap-2 flex-wrap">
             {user.skills?.length > 0 ? (
               user.skills.map((skill, i) => (
@@ -120,7 +121,7 @@ function UserProfile() {
           <PortfolioGallery userId={user.id} editable={false} />
 
           <div className="mt-10">
-            <h3 className="text-xl font-bold mb-4 dark:text-gray-200">⭐ Reseñas recibidas</h3>
+            <h3 className="text-xl font-bold mb-4 dark:text-gray-200 flex items-center gap-2"><Star className="w-5 h-5"/> Reseñas recibidas</h3>
 
             {reviews.length === 0 ? (
               <div className="bg-gray-50 p-4 rounded-xl dark:bg-slate-700">

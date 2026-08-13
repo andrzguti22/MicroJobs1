@@ -278,8 +278,7 @@ def verify_email(payload: VerifyEmailRequest, db: Session = Depends(get_db)):
         )
 
     user.email_verified = True
-    user.email_verification_token = None
-    user.email_verification_token_expires = None
+
 
     db.commit()
 

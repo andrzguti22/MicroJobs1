@@ -7,6 +7,7 @@ import UserProfileSkeleton from "../components/UserProfileSkeleton";
 import Avatar from "../components/Avatar";
 import PortfolioGallery from "../components/PortfolioGallery";
 import { apiFetch } from "../api/client";
+import { MapPin, Phone, BriefcaseBusiness, SquarePen, Wrench, Image} from "lucide-react"
 
 function Profile() {
   const { user } = useContext(UserContext);
@@ -72,12 +73,12 @@ function Profile() {
               <div>
                 <h2 className="text-3xl font-bold dark:text-white">{profile.name}</h2>
 
-                <p className="text-gray-500 dark:text-gray-400 mt-1">📍 {profile.city || "Sin ciudad"}</p>
+                <p className="text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-2"><MapPin className="w-5 h-5"/> {profile.city || "Sin ciudad"}</p>
 
                 <div className="flex flex-wrap gap-4 mt-3 text-sm text-gray-500 dark:text-gray-400">
-                  <span>📞 {profile.phone || "Sin teléfono"}</span>
+                  <span className="flex items-center gap-2"><Phone className="w-5 h-5"/> {profile.phone || "Sin teléfono"}</span>
 
-                  <span>💼 {profile.experience || "Sin experiencia"}</span>
+                  <span className="flex items-center gap-2"><BriefcaseBusiness className="w-5 h-5"/> {profile.experience || "Sin experiencia"}</span>
                 </div>
               </div>
             </div>
@@ -87,7 +88,7 @@ function Profile() {
 
           {/* ACERCA DE MÍ */}
           <div className="bg-gray-50 dark:bg-slate-700 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-600 mt-2">
-            <h3 className="text-lg font-semibold mb-3 dark:text-white">📝 Acerca de mí</h3>
+            <h3 className="text-lg font-semibold mb-3 dark:text-white flex items-center gap-2"><SquarePen className="w-5 h-5"/> Acerca de mí</h3>
 
             <p className="leading-7 text-gray-600 dark:text-gray-300">
               {profile.bio || "Este usuario aún no ha agregado una biografía."}
@@ -96,7 +97,7 @@ function Profile() {
 
           {/* HABILIDADES */}
           <div className="bg-gray-50 dark:bg-slate-700 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-slate-600 mt-6">
-            <h3 className="text-lg font-semibold mb-4 dark:text-white">🛠️ Habilidades</h3>
+            <h3 className="text-lg font-semibold mb-4 dark:text-white flex items-center gap-2"><Wrench className="w-5 h-5"/> Habilidades</h3>
 
             {profile.skills?.length > 0 ? (
               <div className="flex flex-wrap gap-3">

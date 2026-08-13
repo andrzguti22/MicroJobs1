@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import PageWrapper from "../components/PageWrapper";
 import { apiFetch } from "../api/client";
 import { useToast } from "../context/ToastContext";
+import { MapPin } from 'lucide-react';
 
 function JobDetail() {
   const { id } = useParams();
@@ -99,7 +100,7 @@ function JobDetail() {
           <div className="flex justify-between mt-6">
             <span className="text-primary font-bold text-xl">${job.price}</span>
 
-            <span className="text-gray-500 dark:text-gray-400">📍 {job.location}</span>
+            <span className="text-gray-500 dark:text-gray-400 flex items-center gap-2"><MapPin className="w-5 h-5" /> {job.location}</span>
           </div>
 
           <button onClick={handleApply} className="mt-6 bg-primary text-white px-6 py-3 rounded-lg">

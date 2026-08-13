@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { MapPin, Clock } from "lucide-react";
 
 function JobCard({ job }) {
   const navigate = useNavigate();
@@ -36,9 +37,12 @@ function JobCard({ job }) {
 
       {/* INFO */}
       <div className="flex justify-between items-center mt-4 text-sm text-gray-400">
-        <span>📍 {job.location}</span>
-        <span className="bg-gray-100 px-2 py-1 rounded-md text-xs dark:bg-slate-700 ">
-          🕒 {timeAgo(job.created_at)}
+        <span className="flex items-center gap-2">
+          <MapPin className="w-5 h-5" />
+          {job.location}
+        </span>
+        <span className="bg-gray-100 px-2 py-1 rounded-md text-xs dark:bg-slate-700 flex items-center gap-2">
+          <Clock className="w-5 h-5" /> {timeAgo(job.created_at)}
         </span>
       </div>
     </div>

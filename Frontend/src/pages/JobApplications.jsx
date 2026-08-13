@@ -8,6 +8,7 @@ import Avatar from "../components/Avatar";
 import { apiFetch } from "../api/client";
 import { useToast } from "../context/ToastContext";
 
+
 function JobApplications() {
   const { jobId } = useParams();
   const { showToast } = useToast();
@@ -179,7 +180,7 @@ function JobApplications() {
             </div>
           ) : jobApplications.length === 0 ? (
             <div className="bg-white p-6 rounded-xl shadow text-center dark:bg-slate-800">
-              <p className="text-gray-500 dark:text-gray-300 text-lg">Aún no tienes postulantes 😢</p>
+              <p className="text-gray-500 dark:text-gray-300 text-lg">Aún no tienes postulantes </p>
             </div>
           ) : (
             <AnimatePresence mode="popLayout">

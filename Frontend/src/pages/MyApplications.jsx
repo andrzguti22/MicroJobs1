@@ -3,6 +3,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import StatCardSkeleton from "../components/StatSkeletonCard";
 import { apiFetch } from "../api/client";
+import { MapPin, PartyPopper, X } from "lucide-react"
 
 function MyApplications() {
   const [applications, setApplications] = useState([]);
@@ -74,7 +75,7 @@ function MyApplications() {
                 <div key={app.id} className="bg-white p-5 rounded-xl shadow dark:bg-slate-800">
                   <h2 className="font-semibold text-lg dark:text-gray-300">{app.job_title}</h2>
 
-                  <p className="text-gray-500 text-sm mt-1 dark:text-gray-400">📍 {app.location || "Sin ubicación"}</p>
+                  <p className="text-gray-500 text-sm mt-1 dark:text-gray-400 flex items-center gap-2"><MapPin className="w-5 h-5"/> {app.location || "Sin ubicación"}</p>
 
                   <p className="mt-3 text-sm dark:text-gray-300">
                     Estado:{" "}
@@ -82,10 +83,10 @@ function MyApplications() {
                   </p>
 
                   {app.status === "accepted" && (
-                    <p className="text-green-600 text-sm mt-2">🎉 Fuiste seleccionado para este trabajo</p>
+                    <p className="text-green-600 text-sm mt-2 flex items-center gap-2"><PartyPopper className="w-5 h-5 text-gray-400"/> Fuiste seleccionado para este trabajo</p>
                   )}
 
-                  {app.status === "rejected" && <p className="text-red-500 text-sm mt-2">❌ No fuiste seleccionado</p>}
+                  {app.status === "rejected" && <p className="text-red-500 text-sm mt-2 flex items-center gap-2"><X className="w-5 h-5 text-red-600"/> No fuiste seleccionado</p>}
                 </div>
               ))}
             </div>

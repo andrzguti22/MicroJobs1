@@ -6,6 +6,7 @@ import JobSkeleton from "../components/JobSkeleton";
 import { apiFetch } from "../api/client";
 import { useToast } from "../context/ToastContext";
 import { useConfirm } from "../context/ConfirmContext";
+import { MapPin, Clock, Users  } from 'lucide-react';
 
 function MyJobs() {
   const [activeJobs, setActiveJobs] = useState([]);
@@ -187,13 +188,13 @@ function MyJobs() {
                   <span className="text-xl font-bold text-primary">${job.price}</span>
                 </div>
                 <div className="px-5 pb-5 space-y-2">
-                  <div className="flex items-center gap-2 text-gray-500">📍 {job.location}</div>
+                  <div className="flex items-center gap-2 text-gray-500"><MapPin className="w-5 h-5"/> {job.location}</div>
 
                   <div className="flex items-center gap-2 text-gray-500">
-                    👥 {job.applicationsCount || 0} postulantes
+                    <Users className="w-5 h5"/> {job.applicationsCount || 0} postulantes
                   </div>
 
-                  <div className="flex items-center gap-2 text-gray-500">📅 Publicado recientemente</div>
+                  <div className="flex items-center gap-2 text-gray-500"><Clock className="w-5 h-5"/> Publicado recientemente</div>
                 </div>
 
                 <hr className="dark:border-slate-700" />
@@ -237,11 +238,11 @@ function MyJobs() {
             inProgressJobs.map((job) => (
               <div
                 key={job.id}
-                className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 p-5 "
               >
                 <h2 className="font-semibold dark:text-gray-300">{job.title}</h2>
 
-                <p className="text-gray-500 text-sm dark:text-gray-400">📍 {job.location}</p>
+                <p className="text-gray-500 text-sm dark:text-gray-400 flex items-center gap-2"><MapPin className="w-5 h-5"/> {job.location}</p>
 
                 <p className="text-yellow-500 mt-2 font-semibold dark:text-gray-300">En progreso</p>
 

@@ -3,6 +3,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import StatCardSkeleton from "../components/StatSkeletonCard";
 import { apiFetch } from "../api/client";
+import { MapPin , Clock } from "lucide-react"
 
 function JobHistory() {
   const [history, setHistory] = useState([]);
@@ -59,9 +60,9 @@ function JobHistory() {
                 <div key={job.id} className="bg-white p-5 rounded-xl shadow dark:bg-slate-800">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h2 className="font-semibold text-lg dark:text-gray-300">{job.title}</h2>
+                      <h2 className="font-semibold text-lg dark:text-gray-300 pb-2">{job.title}</h2>
 
-                      <p className="text-gray-500 text-sm dark:text-gray-400">📍 {job.location}</p>
+                      <p className="text-gray-500 text-sm dark:text-gray-400 flex items-center gap-2"> <MapPin className="w-5 h-5" /> {job.location}</p>
                     </div>
 
                     <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full font-semibold">
@@ -69,7 +70,7 @@ function JobHistory() {
                     </span>
                   </div>
 
-                  <p className="text-sm text-gray-400 mt-4">🕒 {new Date(job.finished_at).toLocaleString()}</p>
+                  <p className="text-sm text-gray-400 mt-4 flex items-center gap-2"><Clock className="w-5 h-5"/> {new Date(job.finished_at).toLocaleString()}</p>
                 </div>
               ))}
             </div>
