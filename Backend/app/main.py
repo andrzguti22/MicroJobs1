@@ -21,6 +21,7 @@ from app.routes import (
     notifications,
     portfolio,
     admin,
+    ws_chat,
 )
 
 from app.routes.review import router as review_router
@@ -68,5 +69,6 @@ app.include_router(notifications.router)
 app.include_router(review_router)
 app.include_router(portfolio.router)
 app.include_router(admin.router)
+app.include_router(ws_chat.router)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
