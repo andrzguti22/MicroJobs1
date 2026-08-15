@@ -5,7 +5,7 @@ import PageWrapper from "../components/PageWrapper";
 import ConversationSkeleton from "../components/ConversationSkeleton";
 import { MessageSquareText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 
 function Messages() {
   const [conversations, setConversations] = useState([]);
@@ -21,7 +21,7 @@ function Messages() {
   const loadConversations = async () => {
     try {
       const response = await apiFetch(
-        `http://localhost:8000/conversations/user/${currentUser.id}`
+        `${API_URL}/conversations/user/${currentUser.id}`
       );
 
       if (!response.ok) {
@@ -67,7 +67,7 @@ function Messages() {
   const openChat = async (chatId) => {
     try {
       await apiFetch(
-        `http://localhost:8000/messages/read/${chatId}/${currentUser.id}`,
+        `${API_URL}/messages/read/${chatId}/${currentUser.id}`,
         {
           method: "PUT",
         }

@@ -3,7 +3,7 @@ import JobCard from "../components/JobCard";
 import DashboardHeader from "../components/DashboardHeader";
 import { motion } from "framer-motion";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { Loader2, AlertTriangle, Search, SlidersHorizontal, X } from "lucide-react";
 
 const PAGE_SIZE = 20;
@@ -57,7 +57,7 @@ function ExploreJobs() {
 
   const fetchPage = async (skip, activeFilters) => {
     const query = buildQuery(activeFilters, skip);
-    const response = await apiFetch(`http://localhost:8000/jobs?${query}`);
+    const response = await apiFetch(`${API_URL}/jobs?${query}`);
 
     if (!response.ok) {
       throw new Error("Error al obtener trabajos");

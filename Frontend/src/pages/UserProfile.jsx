@@ -5,7 +5,7 @@ import PageWrapper from "../components/PageWrapper";
 import UserProfileSkeleton from "../components/UserProfileSkeleton";
 import Avatar from "../components/Avatar";
 import PortfolioGallery from "../components/PortfolioGallery";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { MapPin, Phone, BriefcaseBusiness, Wrench, Star } from "lucide-react";
 
 function UserProfile() {
@@ -26,7 +26,7 @@ function UserProfile() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await apiFetch(`http://localhost:8000/users/${id}`);
+        const response = await apiFetch(`${API_URL}/users/${id}`);
 
         if (!response.ok) {
           throw new Error("Usuario no encontrado");
@@ -34,7 +34,7 @@ function UserProfile() {
 
         const data = await response.json();
 
-        const reviewsResponse = await apiFetch(`http://localhost:8000/reviews/user/${id}`);
+        const reviewsResponse = await apiFetch(`${API_URL}/reviews/user/${id}`);
 
         if (reviewsResponse.ok) {
           const reviewsData = await reviewsResponse.json();

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { useToast } from "../context/ToastContext";
 
 function CreateJob() {
@@ -34,7 +34,7 @@ function CreateJob() {
     try {
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-      const response = await apiFetch("http://localhost:8000/jobs", {
+      const response = await apiFetch(`${API_URL}/jobs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

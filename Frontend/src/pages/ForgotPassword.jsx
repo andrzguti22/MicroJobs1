@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import PageWrapper from "../components/PageWrapper";
 import { Loader2, MailCheck } from "lucide-react";
+import { API_URL } from "../api/client";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -26,7 +27,7 @@ function ForgotPassword() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/auth/forgot-password", {
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

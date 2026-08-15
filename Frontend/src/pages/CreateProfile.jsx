@@ -3,7 +3,7 @@ import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { Pencil } from "lucide-react";
 
 function CreateProfile() {
@@ -42,7 +42,7 @@ function CreateProfile() {
     });
 
     if (currentUser.profile_image) {
-      setPreview(`http://localhost:8000/${currentUser.profile_image}`);
+      setPreview(`${API_URL}/${currentUser.profile_image}`);
     }
   }, []);
 
@@ -110,7 +110,7 @@ function CreateProfile() {
         formData.append("profile_image", profileImage);
       }
 
-      const response = await apiFetch(`http://localhost:8000/auth/profile/${currentUser.email}`, {
+      const response = await apiFetch(`${API_URL}/auth/profile/${currentUser.email}`, {
         method: "PUT",
         body: formData,
       });
@@ -127,7 +127,7 @@ function CreateProfile() {
       saveUser(data.user);
 
       if (data.user.profile_image) {
-        setPreview(`http://localhost:8000/${data.user.profile_image}`);
+        setPreview(`${API_URL}/${data.user.profile_image}`);
       }
 
       setSaving(false);

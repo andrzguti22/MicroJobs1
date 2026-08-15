@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { useToast } from "../context/ToastContext";
 
 function Review() {
@@ -39,7 +39,7 @@ function Review() {
 
       const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-      const response = await apiFetch("http://localhost:8000/reviews", {
+      const response = await apiFetch(`${API_URL}/reviews`, {
         method: "POST",
 
         headers: {

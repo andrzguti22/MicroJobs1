@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import { useEffect, useState } from "react";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { useToast } from "../context/ToastContext";
 import { MapPin } from 'lucide-react';
 
@@ -20,7 +20,7 @@ function JobDetail() {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const response = await apiFetch(`http://localhost:8000/jobs/${id}`);
+        const response = await apiFetch(`${API_URL}/jobs/${id}`);
 
         if (!response.ok) {
           throw new Error("Trabajo no encontrado");
@@ -54,7 +54,7 @@ function JobDetail() {
     }
 
     try {
-      const response = await apiFetch("http://localhost:8000/applications", {
+      const response = await apiFetch(`${API_URL}/applications`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

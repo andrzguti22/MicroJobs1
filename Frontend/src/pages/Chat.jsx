@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef, useCallback } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { useChatSocket } from "../hooks/useChatSocket";
 import { useToast } from "../context/ToastContext";
 import { Circle } from "lucide-react";
@@ -24,7 +24,7 @@ function Chat() {
   useEffect(() => {
     const loadHistory = async () => {
       try {
-        const response = await apiFetch(`http://localhost:8000/messages/${chatId}`);
+        const response = await apiFetch(`${API_URL}/messages/${chatId}`);
 
         const data = await response.json();
 
@@ -76,7 +76,7 @@ function Chat() {
     // está reconectando): usamos el endpoint REST para no perder el
     // mensaje, y recargamos el historial para verlo reflejado.
     try {
-      const response = await apiFetch("http://localhost:8000/messages", {
+      const response = await apiFetch(`${API_URL}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ function Chat() {
         throw new Error("Error enviando mensaje");
       }
 
-      const reloadResponse = await apiFetch(`http://localhost:8000/messages/${chatId}`);
+      const reloadResponse = await apiFetch(`${API_URL}/messages/${chatId}`);
       const data = await reloadResponse.json();
       setMessages(data);
     } catch (error) {

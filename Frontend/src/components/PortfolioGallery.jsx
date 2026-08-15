@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ImagePlus, Loader2, Trash2, X, ImageOff, Image } from "lucide-react";
-import { apiFetch } from "../api/client";
-
-const API_URL = "http://localhost:8000";
+import { apiFetch, API_URL } from "../api/client";
 
 function PortfolioGallery({ userId, editable = false }) {
   const [images, setImages] = useState([]);

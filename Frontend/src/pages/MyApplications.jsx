@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import StatCardSkeleton from "../components/StatSkeletonCard";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { MapPin, PartyPopper, X } from "lucide-react"
 
 function MyApplications() {
@@ -19,7 +19,7 @@ function MyApplications() {
           return;
         }
 
-        const response = await apiFetch(`http://localhost:8000/applications/user/${currentUser.id}`);
+        const response = await apiFetch(`${API_URL}/applications/user/${currentUser.id}`);
 
         if (!response.ok) {
           throw new Error("Error cargando postulaciones");

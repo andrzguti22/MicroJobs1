@@ -6,7 +6,7 @@ import PageWrapper from "../components/PageWrapper";
 import UserProfileSkeleton from "../components/UserProfileSkeleton";
 import Avatar from "../components/Avatar";
 import PortfolioGallery from "../components/PortfolioGallery";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { MapPin, Phone, BriefcaseBusiness, SquarePen, Wrench, Image} from "lucide-react"
 
 function Profile() {
@@ -23,7 +23,7 @@ function Profile() {
       try {
         if (!user?.id) return;
 
-        const response = await apiFetch(`http://localhost:8000/users/${user.id}`);
+        const response = await apiFetch(`${API_URL}/users/${user.id}`);
 
         if (!response.ok) {
           throw new Error("Error cargando perfil");

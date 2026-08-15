@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import PageWrapper from "../components/PageWrapper";
 import { UserContext } from "../context/UserContext";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { API_URL } from "../api/client";
 
 function VerifyEmail() {
   const { token } = useParams();
@@ -25,7 +26,7 @@ function VerifyEmail() {
 
     const verify = async () => {
       try {
-        const response = await fetch("http://localhost:8000/auth/verify-email", {
+        const response = await fetch(`${API_URL}/auth/verify-email`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

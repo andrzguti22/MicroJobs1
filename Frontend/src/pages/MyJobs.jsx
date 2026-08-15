@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import JobSkeleton from "../components/JobSkeleton";
-import { apiFetch } from "../api/client";
+import { apiFetch, API_URL } from "../api/client";
 import { useToast } from "../context/ToastContext";
 import { useConfirm } from "../context/ConfirmContext";
 import { MapPin, Clock, Users  } from 'lucide-react';
@@ -28,7 +28,7 @@ function MyJobs() {
 
       if (!currentUser) return;
 
-      const response = await apiFetch(`http://localhost:8000/jobs/user/${currentUser.id}`);
+      const response = await apiFetch(`${API_URL}/jobs/user/${currentUser.id}`);
 
       if (!response.ok) {
         throw new Error("Error obteniendo trabajos");
@@ -52,7 +52,7 @@ function MyJobs() {
   // 🔥 ELIMINAR TRABAJO
   const handleDelete = async (jobId) => {
     try {
-      const response = await apiFetch(`http://localhost:8000/jobs/${jobId}`, {
+      const response = await apiFetch(`${API_URL}/jobs/${jobId}`, {
         method: "DELETE",
       });
 
@@ -79,7 +79,7 @@ function MyJobs() {
 
       if (!confirmFinish) return;
 
-      const response = await apiFetch(`http://localhost:8000/jobs/${job.id}/finish`, {
+      const response = await apiFetch(`${API_URL}/jobs/${job.id}/finish`, {
         method: "PUT",
       });
 
@@ -113,7 +113,7 @@ function MyJobs() {
         user_two_id: job.assigned_to_id,
       });
 
-      const response = await apiFetch("http://localhost:8000/conversations", {
+      const response = await apiFetch(`${API_URL}/conversations`, {
         method: "POST",
 
         headers: {

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 import { UserContext } from "../context/UserContext";
 import { useToast } from "../context/ToastContext";
+import { API_URL } from "../api/client";
 
 function Register() {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ function Register() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/auth/register", {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

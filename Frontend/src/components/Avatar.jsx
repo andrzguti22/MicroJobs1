@@ -1,3 +1,5 @@
+import { API_URL } from "../api/client";
+
 function Avatar({
   name,
   image,
@@ -14,7 +16,7 @@ function Avatar({
   };
 
   const avatar = image
-    ? `http://localhost:8000/${image}`
+    ? `${API_URL}/${image}`
     : `https://ui-avatars.com/api/?name=${encodeURIComponent(
         name || "Usuario"
       )}&background=random`;

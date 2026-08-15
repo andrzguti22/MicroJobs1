@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import PageWrapper from "../components/PageWrapper";
 import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import { API_URL } from "../api/client";
 
 function ResetPassword() {
   const { token } = useParams();
@@ -41,7 +42,7 @@ function ResetPassword() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/auth/reset-password", {
+      const response = await fetch(`${API_URL}/auth/reset-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

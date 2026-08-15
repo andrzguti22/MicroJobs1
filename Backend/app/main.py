@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -41,11 +43,19 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # =====================================
 # CORS
 # =====================================
+# Orígenes permitidos: siempre incluye localhost para desarrollo, y además
+# lee ALLOWED_ORIGINS del entorno (separados por coma) para producción,
+# por ejemplo: ALLOWED_ORIGINS=https://micro-jobs1-peach.vercel.app
+_default_origins = ["http://localhost:5173"]
+_extra_origins = [
+    origin.strip()
+    for origin in os.getenv("ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173"
-    ],
+    allow_origins=_default_origins + _extra_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

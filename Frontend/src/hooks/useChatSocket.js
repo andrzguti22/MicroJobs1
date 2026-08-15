@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
-const WS_BASE_URL = "ws://localhost:8000";
+import { API_URL } from "../api/client";
+
+const WS_BASE_URL = API_URL.replace(/^http/, "ws");
 
 /**
  * Hook de WebSocket para un chat en tiempo real.
