@@ -9,6 +9,16 @@ import { apiFetch } from "../api/client";
 import { useUnreadNotificationsCount } from "../hooks/useNotifications";
 import AnimatedStatValue from "../components/AnimatedStatValue";
 import MiniActivityChart from "../components/MiniActivityChart";
+import ProfileCompletionBar from "../components/ProfileCompletionBar";
+
+// Devuelve el saludo según la hora local del usuario
+function getGreeting() {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return "Buenos días";
+  if (hour < 19) return "Buenas tardes";
+  return "Buenas noches";
+}
 
 function Dashboard() {
   const { user, logout } = useContext(UserContext);
@@ -25,6 +35,8 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const [unreadMessages, setUnreadMessages] = useState(0);
+
+  const [hasPortfolio, setHasPortfolio] = useState(false);
 
   const unreadNotifications = useUnreadNotificationsCount(user?.id);
 
@@ -104,6 +116,27 @@ function Dashboard() {
     if (!user) return;
 
     loadRating();
+  }, [user]);
+
+  // Solo nos importa si tiene AL MENOS una foto, no el listado completo
+  useEffect(() => {
+    if (!user) return;
+
+    const loadPortfolio = async () => {
+      try {
+        const response = await apiFetch(`http://localhost:8000/users/${user.id}/portfolio`);
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+
+        setHasPortfolio(data.length > 0);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadPortfolio();
   }, [user]);
 
   const loadRating = async () => {
@@ -319,7 +352,7 @@ function Dashboard() {
 
             <div>
               <h2 className="flex items-center gap-2 text-2xl font-bold dark:text-gray-200">
-                Hola, {user?.name || "Usuario"}
+                {getGreeting()}, {user?.name || "Usuario"}
                 <Hand className="w-6 h-6 text-primary" />
               </h2>
 
@@ -328,6 +361,7 @@ function Dashboard() {
           </div>
         </div>
 
+        <ProfileCompletionBar user={user} hasPortfolio={hasPortfolio} />
         {/* ===================================== */}
         {/* 🔥 STATS */}
         {/* ===================================== */}
