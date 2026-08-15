@@ -2,11 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
-import { Briefcase, History, HardHat, MessageCircle, Bell, User, Hand } from "lucide-react";
+import { Briefcase, History, HardHat, MessageCircle, Bell, User, Hand, Users, Rocket, CheckCircle2 } from "lucide-react";
 import StatCardSkeleton from "../components/StatSkeletonCard";
 import Avatar from "../components/Avatar";
 import { apiFetch } from "../api/client";
 import { useUnreadNotificationsCount } from "../hooks/useNotifications";
+import AnimatedStatValue from "../components/AnimatedStatValue";
+import MiniActivityChart from "../components/MiniActivityChart";
 
 function Dashboard() {
   const { user, logout } = useContext(UserContext);
@@ -133,23 +135,65 @@ function Dashboard() {
     {
       label: "Trabajos Publicados",
       value: userJobs.length,
+      path: "/my-jobs",
     },
 
     {
       label: "Mensajes Nuevos",
       value: unreadMessages,
+      path: "/messages",
     },
 
     {
       label: "Notificaciones",
       value: unreadNotifications,
+      path: "/notifications",
     },
 
     {
       label: "Calificación",
       value: averageRating > 0 ? `⭐ ${averageRating}` : "Sin reseñas",
+      path: "/profile",
     },
   ];
+
+  const pendingApplications = userJobs.reduce(
+    (total, job) => total + (job.pendingApplicationsCount || 0),
+    0
+  );
+
+  const jobsWithPendingApplications = userJobs.filter(
+    (job) => job.pendingApplicationsCount > 0
+  );
+
+  const monthlyActivity = (() => {
+    const months = [];
+    const now = new Date();
+
+    for (let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        label: date.toLocaleDateString("es-ES", { month: "short" }).replace(".", ""),
+        year: date.getFullYear(),
+        month: date.getMonth(),
+        count: 0,
+      });
+    }
+
+    userJobs.forEach((job) => {
+      if (!job.created_at) return;
+
+      const created = new Date(job.created_at);
+
+      const bucket = months.find(
+        (m) => m.year === created.getFullYear() && m.month === created.getMonth()
+      );
+
+      if (bucket) bucket.count += 1;
+    });
+
+    return months;
+  })();
 
   return (
     <div className="bg-secondary dark:bg-slate-900 min-h-screen">
@@ -293,6 +337,7 @@ function Dashboard() {
             : stats.map((item) => (
                 <div
                   key={item.label}
+                  onClick={() => navigate(item.path)}
                   className="
           bg-white dark:bg-slate-800
           p-4 rounded-xl shadow
@@ -308,7 +353,15 @@ function Dashboard() {
                 >
                   <p className="text-gray-500 dark:text-gray-300 text-sm">{item.label}</p>
 
-                  <h2 className="text-xl font-bold mt-2 dark:text-white">{item.value}</h2>
+                  <h2 className="text-xl font-bold mt-2 dark:text-white">
+                    <AnimatedStatValue value={item.value} />
+                  </h2>
+
+                  {item.label === "Trabajos Publicados" && userJobs.length > 0 && (
+                    <div className="mt-3">
+                      <MiniActivityChart data={monthlyActivity} />
+                    </div>
+                  )}
                 </div>
               ))}
         </div>
@@ -330,6 +383,61 @@ function Dashboard() {
           >
             Explorar Trabajos
           </button>
+        </div>
+
+        {/* ===================================== */}
+        {/* 🔥 ACCIONES PENDIENTES */}
+        {/* ===================================== */}
+        <div className="bg-white p-6 rounded-xl shadow dark:bg-slate-800">
+          <h3 className="font-bold dark:text-gray-200 mb-4">Acciones pendientes</h3>
+
+          {loading ? (
+            <div className="h-16 rounded-lg bg-gray-200 dark:bg-slate-700 animate-pulse" />
+          ) : userJobs.length === 0 ? (
+            <div
+              onClick={() => navigate("/create")}
+              className="flex items-center gap-3 border border-dashed border-primary/40 p-4 rounded-lg cursor-pointer hover:bg-primary/5 transition"
+            >
+              <Rocket className="w-6 h-6 text-primary" />
+              <div>
+                <p className="font-medium dark:text-gray-200">Publica tu primer trabajo</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Todavía no has publicado nada — empieza en segundos.
+                </p>
+              </div>
+            </div>
+          ) : pendingApplications === 0 ? (
+            <div className="flex items-center gap-3 p-4 rounded-lg bg-green-50 dark:bg-green-500/10">
+              <CheckCircle2 className="w-6 h-6 text-green-500" />
+              <p className="text-sm dark:text-gray-200">
+                Estás al día, no tienes postulaciones pendientes por revisar.
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {jobsWithPendingApplications.map((job) => (
+                <div
+                  key={job.id}
+                  onClick={() => navigate(`/job-applications/${job.id}`)}
+                  className="flex items-center justify-between border p-4 rounded-lg cursor-pointer hover:border-primary transition"
+                >
+                  <div className="flex items-center gap-3">
+                    <Users className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="font-medium dark:text-gray-200">{job.title}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {job.pendingApplicationsCount} postulante
+                        {job.pendingApplicationsCount > 1 ? "s" : ""} esperando respuesta
+                      </p>
+                    </div>
+                  </div>
+                  <span className="bg-primary/10 text-primary text-xs font-semibold px-2 py-1 rounded-full">
+                    Revisar
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
       </div>

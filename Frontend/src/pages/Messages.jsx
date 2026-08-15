@@ -244,7 +244,7 @@ function Messages() {
 
                       </div>
 
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-400 ">
                         {chat.updated_at
                           ? formatChatDate(chat.updated_at)
                           : ""}

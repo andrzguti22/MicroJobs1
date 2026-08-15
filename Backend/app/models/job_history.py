@@ -9,7 +9,7 @@ class JobHistory(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    job_id = Column(Integer, ForeignKey("jobs.id"))
+    job_id = Column(Integer, ForeignKey("jobs.id", ondelete="SET NULL"), nullable=True)
 
     employer_id = Column(Integer)
     worker_id = Column(Integer)

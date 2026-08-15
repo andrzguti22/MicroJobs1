@@ -258,6 +258,8 @@ def get_user_jobs(user_id: int, db: Session = Depends(get_db)):
     job_ids = [job.id for job in jobs]
 
     counts_map = {}
+    pending_counts_map = {}
+
     if job_ids:
         counts = (
             db.query(Application.job_id, func.count(Application.id))
@@ -266,6 +268,14 @@ def get_user_jobs(user_id: int, db: Session = Depends(get_db)):
             .all()
         )
         counts_map = dict(counts)
+
+        pending_counts = (
+            db.query(Application.job_id, func.count(Application.id))
+            .filter(Application.job_id.in_(job_ids), Application.status == "pending")
+            .group_by(Application.job_id)
+            .all()
+        )
+        pending_counts_map = dict(pending_counts)
 
     result = []
 
@@ -280,7 +290,9 @@ def get_user_jobs(user_id: int, db: Session = Depends(get_db)):
             "status": job.status,
             "owner_id": job.owner_id,
             "assigned_to_id": job.assigned_to_id,
-            "applicationsCount": counts_map.get(job.id, 0)
+            "applicationsCount": counts_map.get(job.id, 0),
+            "pendingApplicationsCount": pending_counts_map.get(job.id, 0),
+            "created_at": job.created_at
         })
 
     return result
