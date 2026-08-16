@@ -1,5 +1,6 @@
 import os
 import smtplib
+import socket
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -14,6 +15,54 @@ SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "MicroJobs")
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", SMTP_USER)
+
+
+def _create_ipv4_connection(address, timeout, source_address=None):
+    """
+    Reemplazo de socket.create_connection que fuerza IPv4.
+
+    Algunos proveedores (Render incluido) resuelven smtp.gmail.com a una
+    direccion IPv6 sin tener salida IPv6 configurada, lo que produce
+    "Network is unreachable" al conectar. Forzamos AF_INET para evitar
+    ese problema.
+    """
+    host, port = address
+
+    err = None
+    for res in socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM):
+        family, socktype, proto, _, sockaddr = res
+
+        sock = None
+        try:
+            sock = socket.socket(family, socktype, proto)
+            sock.settimeout(timeout)
+
+            if source_address:
+                sock.bind(source_address)
+
+            sock.connect(sockaddr)
+
+            return sock
+        except OSError as exc:
+            err = exc
+
+            if sock is not None:
+                sock.close()
+
+    if err is not None:
+        raise err
+
+    raise OSError("No se pudo resolver una direccion IPv4 para el host SMTP")
+
+
+class _IPv4SMTP(smtplib.SMTP):
+    """SMTP que siempre conecta usando IPv4."""
+
+    def _get_socket(self, host, port, timeout):
+        if timeout is not None and not timeout:
+            raise ValueError("El timeout no puede ser 0")
+
+        return _create_ipv4_connection((host, port), timeout, self.source_address)
 
 
 def send_email(to_email: str, subject: str, html_body: str) -> bool:
@@ -39,7 +88,7 @@ def send_email(to_email: str, subject: str, html_body: str) -> bool:
     try:
         context = ssl.create_default_context()
 
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT,timeout=10) as server:
+        with _IPv4SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
             server.starttls(context=context)
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(SMTP_FROM_EMAIL, to_email, message.as_string())
