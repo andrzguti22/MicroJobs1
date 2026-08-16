@@ -39,7 +39,7 @@ def send_email(to_email: str, subject: str, html_body: str) -> bool:
     try:
         context = ssl.create_default_context()
 
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT,timeout=10) as server:
             server.starttls(context=context)
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.sendmail(SMTP_FROM_EMAIL, to_email, message.as_string())
