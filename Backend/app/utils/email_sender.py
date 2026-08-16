@@ -1,97 +1,71 @@
 import os
-import smtplib
-import socket
-import ssl
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
-SMTP_USER = os.getenv("SMTP_USER")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
-SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "MicroJobs")
-SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", SMTP_USER)
+# =========================================
+# Resend (API HTTP para enviar correos)
+# =========================================
+# Se cambió de SMTP a la API HTTP de Resend porque Render bloquea el
+# tráfico saliente por los puertos SMTP (25, 465, 587) en los servicios
+# web del plan gratuito. La API de Resend usa HTTPS (puerto 443), que sí
+# está permitido.
+#
+# Regístrate gratis en https://resend.com (3,000 correos/mes gratis).
+# Genera un API Key en https://resend.com/api-keys y ponlo en
+# RESEND_API_KEY.
+RESEND_API_KEY = os.getenv("RESEND_API_KEY")
+RESEND_API_URL = "https://api.resend.com/emails"
 
-
-def _create_ipv4_connection(address, timeout, source_address=None):
-    """
-    Reemplazo de socket.create_connection que fuerza IPv4.
-
-    Algunos proveedores (Render incluido) resuelven smtp.gmail.com a una
-    direccion IPv6 sin tener salida IPv6 configurada, lo que produce
-    "Network is unreachable" al conectar. Forzamos AF_INET para evitar
-    ese problema.
-    """
-    host, port = address
-
-    err = None
-    for res in socket.getaddrinfo(host, port, socket.AF_INET, socket.SOCK_STREAM):
-        family, socktype, proto, _, sockaddr = res
-
-        sock = None
-        try:
-            sock = socket.socket(family, socktype, proto)
-            sock.settimeout(timeout)
-
-            if source_address:
-                sock.bind(source_address)
-
-            sock.connect(sockaddr)
-
-            return sock
-        except OSError as exc:
-            err = exc
-
-            if sock is not None:
-                sock.close()
-
-    if err is not None:
-        raise err
-
-    raise OSError("No se pudo resolver una direccion IPv4 para el host SMTP")
-
-
-class _IPv4SMTP(smtplib.SMTP):
-    """SMTP que siempre conecta usando IPv4."""
-
-    def _get_socket(self, host, port, timeout):
-        if timeout is not None and not timeout:
-            raise ValueError("El timeout no puede ser 0")
-
-        return _create_ipv4_connection((host, port), timeout, self.source_address)
+EMAIL_FROM_NAME = os.getenv("EMAIL_FROM_NAME", "MicroJobs")
+# Mientras no verifiques un dominio propio en Resend, solo puedes usar
+# esta dirección de prueba (onboarding@resend.dev) y solo puedes enviar
+# correos a la cuenta de correo con la que te registraste en Resend.
+# Para enviar a cualquier usuario real, verifica tu propio dominio en
+# https://resend.com/domains y pon aquí una dirección de ese dominio,
+# ej. EMAIL_FROM_ADDRESS=notificaciones@tudominio.com
+EMAIL_FROM_ADDRESS = os.getenv("EMAIL_FROM_ADDRESS", "onboarding@resend.dev")
 
 
 def send_email(to_email: str, subject: str, html_body: str) -> bool:
     """
-    Envía un correo HTML usando las credenciales SMTP configuradas
-    en el archivo .env. Retorna True si se envió correctamente.
+    Envía un correo HTML usando la API de Resend.
+    Retorna True si se envió correctamente.
     """
 
-    if not SMTP_USER or not SMTP_PASSWORD:
+    if not RESEND_API_KEY:
         print(
-            "⚠️  SMTP no configurado. Define SMTP_USER y SMTP_PASSWORD en el archivo .env "
-            "para poder enviar correos reales. Correo NO enviado a:", to_email
+            "⚠️  Resend no configurado. Define RESEND_API_KEY en las variables de "
+            "entorno para poder enviar correos reales. Correo NO enviado a:", to_email
         )
         return False
 
-    message = MIMEMultipart("alternative")
-    message["Subject"] = subject
-    message["From"] = f"{SMTP_FROM_NAME} <{SMTP_FROM_EMAIL}>"
-    message["To"] = to_email
+    payload = {
+        "from": f"{EMAIL_FROM_NAME} <{EMAIL_FROM_ADDRESS}>",
+        "to": [to_email],
+        "subject": subject,
+        "html": html_body,
+    }
 
-    message.attach(MIMEText(html_body, "html"))
+    headers = {
+        "Authorization": f"Bearer {RESEND_API_KEY}",
+        "Content-Type": "application/json",
+    }
 
     try:
-        context = ssl.create_default_context()
+        response = httpx.post(
+            RESEND_API_URL, json=payload, headers=headers, timeout=10
+        )
 
-        with _IPv4SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
-            server.starttls(context=context)
-            server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(SMTP_FROM_EMAIL, to_email, message.as_string())
+        if response.status_code >= 400:
+            print(
+                "❌ Error enviando el correo:",
+                response.status_code,
+                response.text,
+            )
+            return False
 
         return True
 
