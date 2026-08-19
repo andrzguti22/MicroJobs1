@@ -1,16 +1,12 @@
 import { createContext, useEffect, useState } from "react";
-import { apiFetch, API_URL } from "../api/client";
+import { apiFetch, API_URL, getToken, getStoredUser } from "../api/client";
 
 export const UserContext = createContext();
 
 export function UserProvider({ children }) {
-  const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("currentUser")) || null,
-  );
+  const [user, setUser] = useState(getStoredUser());
 
-  const [token, setToken] = useState(
-    localStorage.getItem("token") || null,
-  );
+  const [token, setToken] = useState(getToken());
 
   // 🔄 REFRESCAR USUARIO
   // Al cargar la app (o tras un redeploy que recarga la página), los
@@ -33,7 +29,15 @@ export function UserProvider({ children }) {
 
         if (cancelled) return;
 
-        localStorage.setItem("currentUser", JSON.stringify(freshUser));
+        // Actualiza el usuario guardado en el mismo storage que ya se
+        // esté usando (localStorage si "Recordarme" estaba marcado,
+        // sessionStorage si no).
+        if (localStorage.getItem("token")) {
+          localStorage.setItem("currentUser", JSON.stringify(freshUser));
+        } else if (sessionStorage.getItem("token")) {
+          sessionStorage.setItem("currentUser", JSON.stringify(freshUser));
+        }
+
         setUser(freshUser);
       } catch (error) {
         // Si falla (ej. sin conexión momentánea), seguimos usando lo
@@ -53,7 +57,10 @@ export function UserProvider({ children }) {
   }, [token]);
 
   // 🔐 LOGIN
-  const loginUser = async (email, password) => {
+  // remember = true -> guarda la sesión en localStorage (sobrevive a
+  // cerrar el navegador). remember = false -> la guarda en
+  // sessionStorage (se borra al cerrar la pestaña/navegador).
+  const loginUser = async (email, password, remember = true) => {
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
@@ -72,8 +79,16 @@ export function UserProvider({ children }) {
         return false;
       }
 
-      localStorage.setItem("currentUser", JSON.stringify(data.user));
-      localStorage.setItem("token", data.access_token);
+      const storage = remember ? localStorage : sessionStorage;
+      const otherStorage = remember ? sessionStorage : localStorage;
+
+      storage.setItem("currentUser", JSON.stringify(data.user));
+      storage.setItem("token", data.access_token);
+
+      // Limpia el otro storage por si había una sesión previa ahí,
+      // para no dejar datos duplicados/desactualizados.
+      otherStorage.removeItem("currentUser");
+      otherStorage.removeItem("token");
 
       setUser(data.user);
       setToken(data.access_token);
@@ -98,7 +113,13 @@ export function UserProvider({ children }) {
   const saveUser = (data) => {
     const updatedUser = { ...user, ...data };
 
-    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+    // Actualiza el mismo storage que ya se esté usando para esta sesión.
+    if (localStorage.getItem("token")) {
+      localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+    } else if (sessionStorage.getItem("token")) {
+      sessionStorage.setItem("currentUser", JSON.stringify(updatedUser));
+    }
+
     setUser(updatedUser);
   };
 
@@ -106,6 +127,8 @@ export function UserProvider({ children }) {
   const logout = () => {
     localStorage.removeItem("currentUser");
     localStorage.removeItem("token");
+    sessionStorage.removeItem("currentUser");
+    sessionStorage.removeItem("token");
     setUser(null);
     setToken(null);
   };

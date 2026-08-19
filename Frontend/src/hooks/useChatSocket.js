@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
-import { API_URL } from "../api/client";
+import { API_URL, getToken } from "../api/client";
 
 const WS_BASE_URL = API_URL.replace(/^http/, "ws");
 
@@ -35,7 +35,7 @@ export function useChatSocket(conversationId, { onMessage } = {}) {
     let isUnmounted = false;
 
     const connect = () => {
-      const token = localStorage.getItem("token");
+      const token = getToken();
 
       if (!token) return;
 

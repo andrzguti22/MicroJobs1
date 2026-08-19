@@ -5,6 +5,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import { apiFetch, API_URL } from "../api/client";
 import { Pencil } from "lucide-react";
+import { AVAILABLE_CITIES } from "../constants/cities";
 
 function CreateProfile() {
   const { saveUser } = useContext(UserContext);
@@ -212,7 +213,11 @@ function CreateProfile() {
                 >
                   <option value="">Selecciona una ciudad</option>
 
-                  <option value="Medellín">Medellín</option>
+                  {AVAILABLE_CITIES.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
                 </select>
               </div>
 

@@ -17,12 +17,14 @@ function Login() {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const [remember, setRemember] = useState(true);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const email = form.email.trim().toLowerCase();
 
-    const success = await loginUser(form.email, form.password);
+    const success = await loginUser(form.email, form.password, remember);
 
     if (!success) {
       setError("Credenciales inválidas");
@@ -82,7 +84,17 @@ function Login() {
                   </button>
                 </div>
 
-                <div className="text-right -mt-2">
+                <div className="flex items-center justify-between -mt-2">
+                  <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 select-none cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={remember}
+                      onChange={(e) => setRemember(e.target.checked)}
+                      className="rounded border-gray-300 text-primary focus:ring-primary/30 dark:bg-slate-700 dark:border-slate-600"
+                    />
+                    Recordarme
+                  </label>
+
                   <Link
                     to="/forgot-password"
                     className="text-sm text-primary hover:underline"

@@ -4,6 +4,7 @@ import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
 import { apiFetch, API_URL } from "../api/client";
 import { useToast } from "../context/ToastContext";
+import { AVAILABLE_CITIES } from "../constants/cities";
 
 function CreateJob() {
   const navigate = useNavigate();
@@ -87,14 +88,20 @@ function CreateJob() {
               className="p-3 border rounded-lg dark:bg-slate-800 dark:text-gray-300"
             />
 
-            <input
-              type="text"
+            <select
               name="location"
-              placeholder="Ubicación"
               value={form.location}
               onChange={handleChange}
               className="p-3 border rounded-lg dark:bg-slate-800 dark:text-gray-300"
-            />
+            >
+              <option value="">Selecciona una ciudad</option>
+
+              {AVAILABLE_CITIES.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
 
             <input
               type="number"
