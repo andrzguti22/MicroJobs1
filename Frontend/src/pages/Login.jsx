@@ -84,7 +84,7 @@ function Login() {
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between -mt-2">
+                <div className="flex items-center justify-between gap-4 -mt-2">
                   <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 select-none cursor-pointer">
                     <input
                       type="checkbox"
@@ -97,7 +97,7 @@ function Login() {
 
                   <Link
                     to="/forgot-password"
-                    className="text-sm text-primary hover:underline"
+                    className="text-sm text-primary hover:underline whitespace-nowrap"
                   >
                     ¿Olvidaste tu contraseña?
                   </Link>
