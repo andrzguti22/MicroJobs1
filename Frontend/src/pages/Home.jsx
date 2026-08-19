@@ -1,6 +1,6 @@
 import Navbar from "../components/Navbar";
 import JobCard from "../components/JobCard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 
 function Home() {
@@ -79,6 +79,18 @@ function Home() {
         </section>
         {/* FOOTER */}
         <footer className="mt-16 border-t border-gray-200 dark:border-slate-700 py-6 text-center">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-4 text-sm">
+            <Link to="/terms" className="text-gray-500 dark:text-gray-400 hover:text-primary transition">
+              Términos y Condiciones
+            </Link>
+            <Link to="/privacy" className="text-gray-500 dark:text-gray-400 hover:text-primary transition">
+              Política de Privacidad
+            </Link>
+            <Link to="/contact" className="text-gray-500 dark:text-gray-400 hover:text-primary transition">
+              Contáctanos
+            </Link>
+          </div>
+
           <p className="text-gray-500 dark:text-gray-400 text-sm">
             © {new Date().getFullYear()} MicroJobs. Todos los derechos reservados.
           </p>

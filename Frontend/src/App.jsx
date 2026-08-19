@@ -9,6 +9,9 @@ import Home from "./pages/Home";
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Contact = lazy(() => import("./pages/Contact"));
 const CreateProfile = lazy(() => import("./pages/CreateProfile"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -48,6 +51,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/create-profile" element={<CreateProfile />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/verify-email/:token" element={<VerifyEmail />} />

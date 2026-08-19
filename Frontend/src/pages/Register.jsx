@@ -11,6 +11,7 @@ function Register() {
   const { loginWithToken } = useContext(UserContext);
   const { showToast } = useToast();
   const [showHint, setShowHint] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -42,6 +43,10 @@ function Register() {
       newErrors.password = "La contraseña es obligatoria";
     } else if (!passwordRegex.test(form.password)) {
       newErrors.password = "Debe tener mínimo 6 caracteres, una mayúscula y un número";
+    }
+
+    if (!acceptedTerms) {
+      newErrors.terms = "Debes aceptar los Términos y la Política de Privacidad";
     }
 
     return newErrors;
@@ -158,6 +163,28 @@ function Register() {
               {errors.password && (
                 <span className="text-red-500 text-sm">{errors.password}</span>
               )}
+
+                <label className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300 select-none cursor-pointer mt-1">
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    className="mt-0.5 rounded border-gray-300 text-primary focus:ring-primary/30 dark:bg-slate-700 dark:border-slate-600"
+                  />
+                  <span>
+                    Acepto los{" "}
+                    <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      Términos y Condiciones
+                    </a>{" "}
+                    y la{" "}
+                    <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      Política de Privacidad
+                    </a>
+                  </span>
+                </label>
+                {errors.terms && (
+                  <span className="text-red-500 text-sm">{errors.terms}</span>
+                )}
 
                 <button className="bg-primary text-white py-3 rounded-lg mt-2 hover:scale-105 hover:shadow-lg transition duration-300">
                   Registrarse
