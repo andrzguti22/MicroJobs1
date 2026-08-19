@@ -1,5 +1,5 @@
-import { createContext, useState } from "react";
-import { API_URL } from "../api/client";
+import { createContext, useEffect, useState } from "react";
+import { apiFetch, API_URL } from "../api/client";
 
 export const UserContext = createContext();
 
@@ -11,6 +11,46 @@ export function UserProvider({ children }) {
   const [token, setToken] = useState(
     localStorage.getItem("token") || null,
   );
+
+  // 🔄 REFRESCAR USUARIO
+  // Al cargar la app (o tras un redeploy que recarga la página), los
+  // datos del usuario guardados en localStorage pueden estar
+  // desactualizados (ej. email_verified sigue en false aunque ya se
+  // verificó desde otra pestaña/dispositivo). Pedimos el estado real
+  // al backend en cuanto haya un token disponible.
+  useEffect(() => {
+    if (!token) return;
+
+    let cancelled = false;
+
+    const refreshUser = async () => {
+      try {
+        const response = await apiFetch(`${API_URL}/auth/me`);
+
+        if (!response.ok || cancelled) return;
+
+        const freshUser = await response.json();
+
+        if (cancelled) return;
+
+        localStorage.setItem("currentUser", JSON.stringify(freshUser));
+        setUser(freshUser);
+      } catch (error) {
+        // Si falla (ej. sin conexión momentánea), seguimos usando lo
+        // que ya había en localStorage; no rompemos la sesión por esto.
+        console.error(error);
+      }
+    };
+
+    refreshUser();
+
+    return () => {
+      cancelled = true;
+    };
+    // Solo queremos que corra cuando cambia el token (login/logout),
+    // no en cada render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   // 🔐 LOGIN
   const loginUser = async (email, password) => {

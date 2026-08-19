@@ -114,6 +114,30 @@ def login(request: Request, user: UserLogin, db: Session = Depends(get_db)):
             "profile_image": db_user.profile_image
         }
     }
+
+# 🟣 PERFIL DEL USUARIO ACTUAL (según el token)
+# Se usa para refrescar los datos del usuario (ej. email_verified, role)
+# cada vez que la app carga, sin depender de lo que haya quedado
+# guardado en localStorage desde el login/registro.
+@router.get("/me")
+def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": current_user.name,
+        "role": current_user.role,
+        "email_verified": current_user.email_verified,
+
+        "city": current_user.city,
+        "phone": current_user.phone,
+        "experience": current_user.experience,
+        "bio": current_user.bio,
+
+        "skills": current_user.skills.split(",") if current_user.skills else [],
+
+        "profile_image": current_user.profile_image
+    }
+
 # PERFIL
 @router.put("/profile/{email}")
 async def update_profile(
