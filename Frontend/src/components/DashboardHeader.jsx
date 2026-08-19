@@ -107,7 +107,7 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
       </Link>
 
       {/* DERECHA */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4">
         {/* 🛡️ ACCESO ADMIN */}
         {currentUser?.role === "admin" && (
           <Link
