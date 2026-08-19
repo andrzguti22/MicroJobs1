@@ -72,12 +72,6 @@ export function ToastProvider({ children }) {
   );
 }
 
-/**
- * Hook para mostrar notificaciones estilizadas en vez de alert() nativo.
- * Uso: const { showToast } = useToast();
- *      showToast("Trabajo publicado 🚀", "success");
- *      showToast("Algo salió mal", "error");
- */
 export function useToast() {
   const context = useContext(ToastContext);
 

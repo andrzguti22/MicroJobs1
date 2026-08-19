@@ -26,9 +26,6 @@ function JobDetail() {
       setLoading(true);
       setNotFound(false);
 
-      // Si programamos un reintento, no queremos que el "finally" apague
-      // el estado de carga antes de que termine ese reintento (eso es lo
-      // que causaba el parpadeo de "Trabajo no encontrado").
       let retryScheduled = false;
 
       try {
@@ -37,9 +34,6 @@ function JobDetail() {
         if (cancelled) return;
 
         if (response.status === 404) {
-          // Reintenta una vez antes de dar por perdido el trabajo: con el
-          // connection pooler de Supabase, la primera consulta de una
-          // conexión reciclada a veces devuelve un 404 "falso" pasajero.
           if (attempt < 2) {
             retryScheduled = true;
             setTimeout(() => {
@@ -65,9 +59,6 @@ function JobDetail() {
       } catch (error) {
         if (cancelled) return;
 
-        // Reintenta una vez ante errores de red/servidor pasajeros
-        // (por ejemplo, cuando el backend recién está "despertando"),
-        // en vez de mostrar directo "trabajo no encontrado".
         if (attempt < 2) {
           retryScheduled = true;
           setTimeout(() => {
@@ -80,8 +71,6 @@ function JobDetail() {
         setJob(null);
         setNotFound(true);
       } finally {
-        // Solo apagamos "cargando" si de verdad terminamos (éxito o
-        // fallo final) — nunca en medio de un reintento programado.
         if (!cancelled && !retryScheduled) setLoading(false);
       }
     };

@@ -6,13 +6,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ⚠️ En producción, define SECRET_KEY en el archivo .env con un valor
-# largo y aleatorio (por ejemplo: python -c "import secrets; print(secrets.token_hex(32))")
+
 SECRET_KEY = os.getenv("SECRET_KEY", "inseguro-cambia-esto-en-produccion")
 
 ALGORITHM = "HS256"
 
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))  # 24h
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "1440"))  
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:

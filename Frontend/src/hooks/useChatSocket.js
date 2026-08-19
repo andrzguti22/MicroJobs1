@@ -4,27 +4,14 @@ import { API_URL, getToken } from "../api/client";
 
 const WS_BASE_URL = API_URL.replace(/^http/, "ws");
 
-/**
- * Hook de WebSocket para un chat en tiempo real.
- *
- * Reemplaza el setInterval de 1 segundo que tenía Chat.jsx antes
- * (pedía el historial completo cada 1s sin importar si había algo
- * nuevo -- era, con diferencia, el polling más agresivo de toda la
- * app). Ahora el servidor empuja cada mensaje nuevo al instante.
- *
- * Incluye reconexión automática con backoff simple: si la conexión se
- * corta (el usuario cambia de red, el backend se reinicia, etc.), se
- * reintenta cada 3s hasta reconectar.
- */
+
 export function useChatSocket(conversationId, { onMessage } = {}) {
   const [connected, setConnected] = useState(false);
   const socketRef = useRef(null);
   const reconnectTimerRef = useRef(null);
   const onMessageRef = useRef(onMessage);
 
-  // Mantenemos la última versión del callback sin forzar que el efecto
-  // de conexión se vuelva a ejecutar cada vez que el componente
-  // padre re-renderiza y pasa una nueva función inline.
+
   useEffect(() => {
     onMessageRef.current = onMessage;
   }, [onMessage]);

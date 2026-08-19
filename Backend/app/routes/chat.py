@@ -120,9 +120,6 @@ def get_user_conversations(
 
     conversation_ids = [c.id for c in conversations]
 
-    # Antes: por cada conversación se hacían 3 queries (otro usuario,
-    # último mensaje, mensajes sin leer) -> 3N+1 en total. Ahora: 3
-    # queries agregadas en total, sin importar cuántas conversaciones haya.
 
     # 🔥 otros usuarios (batch)
     other_user_ids = {
@@ -308,9 +305,6 @@ def get_messages(
         Message.conversation_id == conversation_id
     ).order_by(Message.created_at.asc()).all()
 
-    # Antes: 1 query por mensaje para buscar el nombre del remitente (N+1).
-    # Con historiales largos esto se nota mucho. Ahora: 1 sola query trae
-    # a todos los remitentes distintos del hilo completo.
     sender_ids = {msg.sender_id for msg in messages}
 
     senders = {

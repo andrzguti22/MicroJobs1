@@ -18,9 +18,7 @@ function Chat() {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
   const scrollRef = useRef(null);
 
-  // 🔥 historial: se pide UNA vez al entrar al chat (por REST, como antes).
-  // Los mensajes que lleguen DESPUÉS de esto ya no se piden por polling,
-  // llegan solos por el WebSocket de abajo.
+
   useEffect(() => {
     const loadHistory = async () => {
       try {
@@ -38,7 +36,7 @@ function Chat() {
     };
 
     loadHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [chatId]);
 
   // 🔥 mensajes en tiempo real

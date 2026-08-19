@@ -5,27 +5,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# =========================================
-# Resend (API HTTP para enviar correos)
-# =========================================
-# Se cambió de SMTP a la API HTTP de Resend porque Render bloquea el
-# tráfico saliente por los puertos SMTP (25, 465, 587) en los servicios
-# web del plan gratuito. La API de Resend usa HTTPS (puerto 443), que sí
-# está permitido.
-#
-# Regístrate gratis en https://resend.com (3,000 correos/mes gratis).
-# Genera un API Key en https://resend.com/api-keys y ponlo en
+
 # RESEND_API_KEY.
 RESEND_API_KEY = os.getenv("RESEND_API_KEY")
 RESEND_API_URL = "https://api.resend.com/emails"
 
 EMAIL_FROM_NAME = os.getenv("EMAIL_FROM_NAME", "MicroJobs")
-# Mientras no verifiques un dominio propio en Resend, solo puedes usar
-# esta dirección de prueba (onboarding@resend.dev) y solo puedes enviar
-# correos a la cuenta de correo con la que te registraste en Resend.
-# Para enviar a cualquier usuario real, verifica tu propio dominio en
-# https://resend.com/domains y pon aquí una dirección de ese dominio,
-# ej. EMAIL_FROM_ADDRESS=notificaciones@tudominio.com
 EMAIL_FROM_ADDRESS = os.getenv("EMAIL_FROM_ADDRESS", "onboarding@resend.dev")
 
 

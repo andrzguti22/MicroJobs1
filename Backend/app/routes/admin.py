@@ -64,9 +64,6 @@ def list_users(
 ):
     users = db.query(User).order_by(desc(User.id)).all()
 
-    # Antes: len(u.jobs_created) y len(u.applications) por cada usuario
-    # -> 2 queries extra POR USUARIO (N+1). Ahora: 2 queries en total,
-    # sin importar cuántos usuarios haya.
     jobs_counts = dict(
         db.query(Job.owner_id, func.count(Job.id))
         .group_by(Job.owner_id)
@@ -156,9 +153,7 @@ def list_jobs(
     db: Session = Depends(get_db),
     current_admin: User = Depends(get_current_admin),
 ):
-    # Antes: 1 query de owner + len(job.applications) POR CADA trabajo (N+1).
-    # Ahora: joinedload trae el owner en la misma query, y el conteo de
-    # postulaciones se hace en 1 sola query agrupada.
+
     jobs = (
         db.query(Job)
         .options(joinedload(Job.owner))

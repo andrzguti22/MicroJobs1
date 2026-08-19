@@ -7,8 +7,7 @@ from app.database import SessionLocal
 from app.models.user import User
 from app.utils.jwt_handler import decode_access_token
 
-# tokenUrl es solo informativo (para la documentación /docs), el login
-# real de esta app recibe JSON y no un form de OAuth2 estándar.
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
 
 

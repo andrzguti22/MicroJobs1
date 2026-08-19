@@ -6,9 +6,6 @@ import { useNotifications, useMarkNotificationRead } from "../hooks/useNotificat
 function Notifications() {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
-  // Misma queryKey que usa DashboardHeader -> comparten caché real.
-  // Si ambos están montados (el dropdown de la campana + esta página),
-  // React Query solo hace una request, no dos.
   const { data: notifications = [], isLoading } = useNotifications(currentUser?.id);
 
   const markAsRead = useMarkNotificationRead(currentUser?.id);

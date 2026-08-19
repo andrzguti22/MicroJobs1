@@ -11,9 +11,6 @@ function EmailVerificationBanner() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
-  // No se muestra si no hay usuario, o si ya está verificado.
-  // (los usuarios que ya existían antes de este feature quedaron
-  // marcados como verificados por la migración, así que no les aparece)
   if (!user || user.email_verified) {
     return null;
   }

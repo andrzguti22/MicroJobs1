@@ -1,15 +1,7 @@
 import { Component } from "react";
 import { AlertTriangle, RotateCcw, Home } from "lucide-react";
 
-/**
- * Error Boundary global: atrapa errores de renderizado en cualquier
- * componente hijo (ej. un .map() sobre undefined, una prop inesperada,
- * etc.) y muestra una pantalla de recuperación en vez de dejar la app
- * en blanco por completo.
- *
- * Debe ser un componente de clase: React todavía no soporta Error
- * Boundaries con hooks (no existe un "useErrorBoundary").
- */
+
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -21,10 +13,6 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Punto único donde conectar un servicio de monitoreo real en el
-    // futuro (ej. Sentry, que ya está en requirements.txt del backend
-    // pero no se usa en ningún lado -- este sería el lugar natural para
-    // su equivalente en frontend, @sentry/react).
     console.error("Error atrapado por ErrorBoundary:", error, errorInfo);
   }
 

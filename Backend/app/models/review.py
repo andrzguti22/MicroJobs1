@@ -20,7 +20,6 @@ class Review(Base):
     __table_args__ = (
         CheckConstraint("rating BETWEEN 1 AND 5", name="ck_review_rating_range"),
         # Un mismo usuario no puede calificar el mismo trabajo dos veces
-        # (antes solo se validaba en Python, con condición de carrera posible)
         UniqueConstraint("job_id", "reviewer_id", name="uq_review_job_reviewer"),
     )
 

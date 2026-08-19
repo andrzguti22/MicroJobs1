@@ -60,9 +60,6 @@ def register(request: Request, user: UserCreate, db: Session = Depends(get_db)):
 
     verify_link = f"{FRONTEND_URL}/verify-email/{verification_token}"
 
-    # No bloqueamos el registro si el correo falla en enviarse (ej. SMTP
-    # no configurado en desarrollo); el usuario puede reenviarlo después
-    # desde /auth/resend-verification.
     send_verification_email(new_user.email, new_user.name, verify_link)
 
     access_token = create_access_token(data={"sub": str(new_user.id)})
@@ -116,9 +113,6 @@ def login(request: Request, user: UserLogin, db: Session = Depends(get_db)):
     }
 
 # 🟣 PERFIL DEL USUARIO ACTUAL (según el token)
-# Se usa para refrescar los datos del usuario (ej. email_verified, role)
-# cada vez que la app carga, sin depender de lo que haya quedado
-# guardado en localStorage desde el login/registro.
 @router.get("/me")
 def get_me(current_user: User = Depends(get_current_user)):
     return {
@@ -215,8 +209,6 @@ def forgot_password(request: Request, payload: ForgotPasswordRequest, db: Sessio
         User.email == payload.email.lower()
     ).first()
 
-    # Por seguridad, siempre respondemos lo mismo exista o no el correo,
-    # para no revelar qué correos están registrados.
     generic_response = {
         "message": "Si el correo existe en nuestro sistema, te enviamos las instrucciones para recuperar tu contraseña."
     }
@@ -262,8 +254,6 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     if expires_at < datetime.now(timezone.utc):
         raise HTTPException(400, "El enlace de recuperación ha expirado, solicita uno nuevo")
 
-    # La fuerza de la contraseña ya se valida automáticamente en el schema
-    # ResetPasswordRequest (ver app/schemas/user.py) antes de llegar aquí.
     user.password = hash_password(payload.new_password)
     user.reset_token = None
     user.reset_token_expires = None

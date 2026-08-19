@@ -33,11 +33,6 @@ function buildQuery(filters, skip) {
 
 function ExploreJobs() {
   const [jobs, setJobs] = useState([]);
-
-  // 'loading' = SOLO la primerísima carga de la página (muestra skeleton).
-  // 'searching' = recargas por búsqueda/filtro (mantiene los resultados
-  // actuales visibles con un indicador sutil, en vez de reemplazarlos
-  // por skeletons cada vez que el usuario escribe o cambia un filtro).
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -67,8 +62,6 @@ function ExploreJobs() {
   };
 
   const loadFirstPage = async (activeFilters) => {
-    // Solo la primera carga real de la página usa el skeleton de pantalla
-    // completa. Las siguientes (búsqueda, filtros) usan 'searching'.
     if (isFirstLoadRef.current) {
       setLoading(true);
     } else {
@@ -96,12 +89,10 @@ function ExploreJobs() {
   // Carga inicial
   useEffect(() => {
     loadFirstPage(DEFAULT_FILTERS);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Búsqueda por texto: con debounce, para no pegarle al backend en cada tecla
+
   useEffect(() => {
-    // Evita disparar una búsqueda extra durante el montaje inicial
     if (isFirstLoadRef.current) return;
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -113,7 +104,6 @@ function ExploreJobs() {
     }, 400);
 
     return () => clearTimeout(debounceRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [draftFilters.search]);
 
   const applyFilters = () => {

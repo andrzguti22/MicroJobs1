@@ -16,13 +16,9 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
   const { darkMode, toggleTheme } = useTheme();
 
   // =====================================
-  // 🔥 MEDIR EL BLOQUE FIJO (header + aviso de verificación si aparece)
+  // 🔥 MEDIR EL BLOQUE FIJO 
   // =====================================
-  // En vez de que cada página adivine un pt-20/pt-24 fijo, este componente
-  // mide su propia altura real (que cambia si el banner de verificación
-  // aparece o desaparece, o si su texto se parte en 2 líneas en mobile) y
-  // empuja el contenido de la página exactamente esa cantidad. Así nunca
-  // queda desincronizado.
+ 
   const fixedRef = useRef(null);
 
   const [fixedHeight, setFixedHeight] = useState(80);
@@ -37,10 +33,6 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
 
       setFixedHeight(height);
 
-      // La exponemos como variable CSS global para que cualquier otro
-      // elemento fijo/posicionado de la app (ej. un sidebar propio de una
-      // página) pueda anclarse a "justo debajo del header" sin tener que
-      // adivinar un número — mismo problema, misma solución en un solo lugar.
       document.documentElement.style.setProperty(
         "--app-header-height",
         `${height}px`
@@ -65,9 +57,7 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
   }, []);
 
   // =====================================
-  // 🔥 NOTIFICACIONES (React Query: caché compartida con Notifications.jsx,
-  // sin importar cuántos componentes usen este hook a la vez, se hace
-  // una sola request de polling, no una por componente)
+  // 🔥 NOTIFICACIONES 
   // =====================================
   const { data: notifications = [] } = useNotifications(
     showBell ? currentUser?.id : undefined
@@ -200,15 +190,9 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
       </div>
       </div>
 
-      {/* Aviso de correo sin verificar: DENTRO del mismo bloque medido,
-          para que su altura (si aparece, o si su texto ocupa 2 líneas
-          en mobile) también se sume automáticamente al espacio reservado */}
       <EmailVerificationBanner />
       </div>
 
-      {/* Spacer: empuja el contenido real de la página exactamente lo que
-          ocupe el bloque fijo de arriba (header + aviso, si está visible).
-          Reemplaza los pt-20/pt-24 adivinados a mano que tenía cada página. */}
       <div style={{ height: fixedHeight }} aria-hidden="true" />
     </>
   );

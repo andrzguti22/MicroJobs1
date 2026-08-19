@@ -32,5 +32,5 @@ class Conversation(Base):
     updated_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
-        onupdate=func.now()  # antes no se actualizaba al llegar un mensaje nuevo
+        onupdate=func.now()  
     )

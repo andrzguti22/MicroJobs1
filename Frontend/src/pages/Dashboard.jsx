@@ -129,8 +129,7 @@ function Dashboard() {
   }, [user]);
 
   // ---------------------------------------------------------------------
-  // PORTAFOLIO (solo nos importa si tiene AL MENOS una foto, no el
-  // listado completo)
+  // PORTAFOLIO 
   // ---------------------------------------------------------------------
   useEffect(() => {
     if (!user) return;
@@ -153,7 +152,7 @@ function Dashboard() {
   }, [user]);
 
   // ---------------------------------------------------------------------
-  // TRABAJOS DEL USUARIO (ya vienen filtrados por el backend)
+  // TRABAJOS DEL USUARIO 
   // ---------------------------------------------------------------------
   const userJobs = jobs;
 
@@ -188,7 +187,7 @@ function Dashboard() {
   const jobsWithPendingApplications = userJobs.filter((job) => job.pendingApplicationsCount > 0);
 
   // ---------------------------------------------------------------------
-  // ACTIVIDAD MENSUAL (para el mini gráfico de trabajos publicados)
+  // ACTIVIDAD MENSUAL 
   // ---------------------------------------------------------------------
   const monthlyActivity = (() => {
     const months = [];

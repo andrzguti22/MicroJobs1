@@ -1,16 +1,3 @@
-"""
-Validación centralizada de imágenes subidas por usuarios (perfil, portafolio, etc.).
-
-Antes de este archivo, cada endpoint de subida (auth.py, portfolio.py)
-reimplementaba su propia validación de forma inconsistente:
-- portfolio.py validaba extensión y tamaño, pero no el contenido real.
-- auth.py (imagen de perfil) no validaba nada de esto.
-
-Ambos confiaban únicamente en la extensión del nombre de archivo, que es
-trivial de falsificar (un archivo llamado "foto.png" puede no ser una
-imagen en absoluto). Este helper valida también los bytes reales del
-archivo usando Pillow.
-"""
 
 from io import BytesIO
 
@@ -51,9 +38,6 @@ async def validate_and_read_image(file: UploadFile) -> tuple[bytes, str]:
     if len(contents) > MAX_FILE_SIZE:
         raise HTTPException(400, "La imagen no puede superar los 5MB")
 
-    # Verificación del contenido real: no confiar solo en la extensión.
-    # Image.verify() lanza una excepción si los bytes no son una imagen
-    # válida, sin importar cómo se llame el archivo.
     try:
         image = Image.open(BytesIO(contents))
         image.verify()

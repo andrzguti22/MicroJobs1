@@ -52,9 +52,6 @@ def create_review(
     if job.status != "finished":
         raise HTTPException(400, "Solo puedes calificar trabajos que ya finalizaron")
 
-    # 🔒 el que califica debe haber participado realmente en ESTE trabajo,
-    # ya sea como dueño o como trabajador asignado (antes: cualquier usuario
-    # autenticado podía calificar a cualquiera, para cualquier job_id)
     if current_user.id not in (job.owner_id, job.assigned_to_id):
         raise HTTPException(403, "No participaste en este trabajo, no puedes calificarlo")
 
@@ -73,7 +70,7 @@ def create_review(
         )
 
     # 🔒 evitar reseñas duplicadas para el mismo trabajo
-    # (la UniqueConstraint del modelo también lo protege a nivel de BD)
+    
     existing_review = db.query(Review).filter(
         Review.job_id == review.job_id,
         Review.reviewer_id == current_user.id,

@@ -9,11 +9,7 @@ export function UserProvider({ children }) {
   const [token, setToken] = useState(getToken());
 
   // 🔄 REFRESCAR USUARIO
-  // Al cargar la app (o tras un redeploy que recarga la página), los
-  // datos del usuario guardados en localStorage pueden estar
-  // desactualizados (ej. email_verified sigue en false aunque ya se
-  // verificó desde otra pestaña/dispositivo). Pedimos el estado real
-  // al backend en cuanto haya un token disponible.
+
   useEffect(() => {
     if (!token) return;
 
@@ -29,9 +25,6 @@ export function UserProvider({ children }) {
 
         if (cancelled) return;
 
-        // Actualiza el usuario guardado en el mismo storage que ya se
-        // esté usando (localStorage si "Recordarme" estaba marcado,
-        // sessionStorage si no).
         if (localStorage.getItem("token")) {
           localStorage.setItem("currentUser", JSON.stringify(freshUser));
         } else if (sessionStorage.getItem("token")) {
@@ -40,8 +33,6 @@ export function UserProvider({ children }) {
 
         setUser(freshUser);
       } catch (error) {
-        // Si falla (ej. sin conexión momentánea), seguimos usando lo
-        // que ya había en localStorage; no rompemos la sesión por esto.
         console.error(error);
       }
     };
@@ -51,15 +42,10 @@ export function UserProvider({ children }) {
     return () => {
       cancelled = true;
     };
-    // Solo queremos que corra cuando cambia el token (login/logout),
-    // no en cada render.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   // 🔐 LOGIN
-  // remember = true -> guarda la sesión en localStorage (sobrevive a
-  // cerrar el navegador). remember = false -> la guarda en
-  // sessionStorage (se borra al cerrar la pestaña/navegador).
+
   const loginUser = async (email, password, remember = true) => {
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
@@ -85,8 +71,6 @@ export function UserProvider({ children }) {
       storage.setItem("currentUser", JSON.stringify(data.user));
       storage.setItem("token", data.access_token);
 
-      // Limpia el otro storage por si había una sesión previa ahí,
-      // para no dejar datos duplicados/desactualizados.
       otherStorage.removeItem("currentUser");
       otherStorage.removeItem("token");
 

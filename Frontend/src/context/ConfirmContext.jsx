@@ -105,12 +105,7 @@ export function ConfirmProvider({ children }) {
   );
 }
 
-/**
- * Hook para reemplazar window.confirm() nativo.
- * Uso: const confirm = useConfirm();
- *      const ok = await confirm({ title: "¿Eliminar?", danger: true });
- *      if (!ok) return;
- */
+
 export function useConfirm() {
   const context = useContext(ConfirmContext);
 

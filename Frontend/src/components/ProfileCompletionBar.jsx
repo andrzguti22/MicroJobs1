@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
 
-// Cada campo cuenta lo mismo hacia el porcentaje total.
-// hasPortfolio se calcula aparte porque no viene en el objeto user.
 function getMissingFields(user, hasPortfolio) {
   const fields = [
     { key: "bio", label: "una biografía", done: !!user?.bio },

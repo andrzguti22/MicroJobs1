@@ -10,7 +10,6 @@ class Application(Base):
 
     __table_args__ = (
         # Evita postulaciones duplicadas incluso bajo requests concurrentes
-        # (antes solo se validaba en Python, con condición de carrera posible)
         UniqueConstraint("user_id", "job_id", name="uq_application_user_job"),
     )
 

@@ -99,8 +99,6 @@ def get_jobs(
 
     job_ids = [job.id for job in jobs]
 
-    # 1 sola query para contar postulaciones de TODOS los trabajos de esta página,
-    # en vez de 1 query por trabajo (antes: N+1)
     counts_map = {}
     if job_ids:
         counts = (

@@ -3,8 +3,6 @@ import re
 from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional
 
-# Misma regla que ya se exige en el frontend (Register.jsx):
-# mínimo 6 caracteres, al menos una mayúscula y un número.
 PASSWORD_REGEX = re.compile(r"^(?=.*[A-Z])(?=.*\d).{6,}$")
 
 

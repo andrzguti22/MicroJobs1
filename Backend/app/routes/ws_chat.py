@@ -28,13 +28,6 @@ router = APIRouter()
 
 
 class ConnectionManager:
-    """
-    Mantiene en memoria qué conexiones WebSocket están activas por
-    conversación. Simple y suficiente para una sola instancia del
-    backend -- si en el futuro se despliega con varios workers/procesos,
-    esto necesitaría moverse a algo compartido (ej. Redis pub/sub),
-    igual que se documentó para el rate limiter.
-    """
 
     def __init__(self):
         self.active_connections: dict[int, list[WebSocket]] = {}
@@ -57,9 +50,6 @@ class ConnectionManager:
             try:
                 await connection.send_json(message)
             except Exception:
-                # Si una conexión ya murió sin avisar, se limpiará sola
-                # en su próximo WebSocketDisconnect -- no interrumpe el
-                # broadcast al resto.
                 pass
 
 
@@ -80,11 +70,7 @@ async def chat_websocket(
     conversation_id: int,
     token: str = Query(..., description="JWT igual al que usa el resto de la API"),
 ):
-    """
-    El navegador no puede mandar el header Authorization en el handshake
-    de un WebSocket, así que el token viaja como query param:
-    ws://.../ws/chat/5?token=<el mismo JWT de siempre>
-    """
+    
 
     db: Session = SessionLocal()
 
@@ -166,11 +152,6 @@ async def chat_websocket(
                     "is_read": new_message.is_read,
                 }
 
-                # Se manda a TODOS los conectados a esta conversación,
-                # incluido quien lo envió -- así el remitente también
-                # recibe la confirmación con el id/timestamp real que
-                # asignó la base de datos, en vez de mostrar un mensaje
-                # "optimista" que después hay que reconciliar.
                 await manager.broadcast(conversation_id, payload_out)
 
         except WebSocketDisconnect:
