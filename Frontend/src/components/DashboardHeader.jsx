@@ -112,7 +112,7 @@ function DashboardHeader({ showBell = false, showBackButton = true, backTo = nul
         {currentUser?.role === "admin" && (
           <Link
             to="/admin"
-            className="hidden sm:flex items-center gap-1.5 text-xs font-semibold bg-primary/10 text-primary px-3 py-2 rounded-lg hover:bg-primary/20 transition"
+            className="flex items-center gap-1.5 text-xs font-semibold bg-primary/10 text-primary px-3 py-2 rounded-lg hover:bg-primary/20 transition"
           >
             <ShieldAlert size={14} />
             Admin
