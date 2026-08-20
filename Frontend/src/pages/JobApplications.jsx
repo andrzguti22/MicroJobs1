@@ -196,7 +196,7 @@ function JobApplications() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.25, delay: index * 0.05 }}
-                      className={`bg-white dark:bg-slate-800 rounded-2xl border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-6 ${
+                      className={`bg-white dark:bg-slate-800 rounded-2xl border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-4 sm:p-6 ${
                         app.status === "accepted"
                           ? "border-l-4 border-l-green-500 border-gray-200 dark:border-slate-700"
                           : app.status === "rejected"
@@ -204,17 +204,17 @@ function JobApplications() {
                             : "border-l-4 border-l-yellow-400 border-gray-200 dark:border-slate-700"
                       }`}
                     >
-                      <div className="flex justify-between items-start">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                         {/* IZQUIERDA */}
 
-                        <div className="flex gap-4">
+                        <div className="flex gap-4 min-w-0">
                           <Avatar name={app.user_name} image={app.profile_image} />
-                          <div>
-                            <div className="flex items-center gap-3">
-                              <h2 className="text-lg font-bold dark:text-white">{app.user_name}</h2>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <h2 className="text-lg font-bold dark:text-white break-words">{app.user_name}</h2>
 
                               <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
                                   app.status === "accepted"
                                     ? "bg-green-100 text-green-700"
                                     : app.status === "rejected"
@@ -226,7 +226,7 @@ function JobApplications() {
                               </span>
                             </div>
 
-                            <p className="text-gray-500 dark:text-gray-400 mt-1">{app.user_email}</p>
+                            <p className="text-gray-500 dark:text-gray-400 mt-1 break-words">{app.user_email}</p>
 
                             <div className="flex gap-3 mt-4">
                               <button
@@ -254,11 +254,11 @@ function JobApplications() {
 
                         {/* DERECHA */}
 
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-row sm:flex-col gap-2 shrink-0">
                           <button
                             disabled={isDisabled}
                             onClick={() => handleStatus(app.id, "accepted")}
-                            className={`px-5 py-2 rounded-lg text-white font-medium transition-all duration-300 ${
+                            className={`flex-1 sm:flex-none px-5 py-2 rounded-lg text-white font-medium transition-all duration-300 ${
                               isDisabled ? "bg-gray-300" : "bg-green-500 hover:bg-green-600 hover:scale-105"
                             }`}
                           >
@@ -268,7 +268,7 @@ function JobApplications() {
                           <button
                             disabled={isDisabled}
                             onClick={() => handleStatus(app.id, "rejected")}
-                            className={`px-5 py-2 rounded-lg text-white font-medium transition-all duration-300 ${
+                            className={`flex-1 sm:flex-none px-5 py-2 rounded-lg text-white font-medium transition-all duration-300 ${
                               isDisabled ? "bg-gray-300" : "bg-red-500 hover:bg-red-600 hover:scale-105"
                             }`}
                           >

@@ -131,10 +131,10 @@ function UserProfile() {
               <div className="flex flex-col gap-4">
                 {reviews.map((review) => (
                   <div key={review.id} className="border rounded-lg p-3">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-semibold dark:text-gray-300">{review.reviewer_name}</span>
+                    <div className="flex justify-between items-center mb-2 gap-2">
+                      <span className="font-semibold dark:text-gray-300 truncate">{review.reviewer_name}</span>
 
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-gray-400 shrink-0 whitespace-nowrap">
                         {new Date(review.created_at).toLocaleDateString("es-CO")}
                       </span>
                     </div>

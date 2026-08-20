@@ -103,7 +103,7 @@ function Chat() {
     <div className="bg-secondary min-h-screen dark:bg-slate-900">
       <DashboardHeader />
       <PageWrapper>
-        <div className="max-w-3xl mx-auto p-6">
+        <div className="max-w-3xl mx-auto p-3 sm:p-6">
           <div className="flex items-center gap-2 mb-4">
             <h1 className="text-xl font-bold dark:text-gray-200">Chat</h1>
 
@@ -119,7 +119,7 @@ function Chat() {
             </span>
           </div>
 
-          <div className="bg-white h-[400px] overflow-y-auto p-4 rounded-xl shadow flex flex-col gap-2 dark:bg-slate-800">
+          <div className="bg-white h-[60vh] sm:h-[400px] overflow-y-auto p-3 sm:p-4 rounded-xl shadow flex flex-col gap-2 dark:bg-slate-800">
             {loading ? (
               <div className="flex flex-col gap-2">
                 {[...Array(4)].map((_, i) => (
@@ -138,11 +138,23 @@ function Chat() {
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`p-2 rounded-lg max-w-[70%] ${
+                    className={`p-2 rounded-lg max-w-[85%] sm:max-w-[70%] break-words ${
                       msg.sender_id === currentUser.id ? "bg-primary text-white self-end" : "bg-gray-200"
                     }`}
                   >
                     <p className="text-sm">{msg.text}</p>
+                    {msg.created_at && (
+                      <p
+                        className={`text-[10px] mt-1 text-right ${
+                          msg.sender_id === currentUser.id ? "text-white/70" : "text-gray-500"
+                        }`}
+                      >
+                        {new Date(msg.created_at).toLocaleTimeString("es-CO", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    )}
                   </div>
                 ))}
                 <div ref={scrollRef} />
@@ -150,18 +162,18 @@ function Chat() {
             )}
           </div>
 
-          <div className="flex gap-2 mt-4 ">
+          <div className="flex gap-2 mt-4">
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              className="flex-1 p-3 border rounded-lg dark:bg-slate-800 dark:text-gray-300"
+              className="flex-1 min-w-0 p-3 border rounded-lg dark:bg-slate-800 dark:text-gray-300"
               placeholder="Escribe un mensaje..."
             />
 
             <button
               onClick={sendMessage}
-              className="bg-primary text-white px-4 rounded-lg hover:scale-105 hover:shadow-lg transition duration-300"
+              className="shrink-0 bg-primary text-white px-4 rounded-lg hover:scale-105 hover:shadow-lg transition duration-300"
             >
               Enviar
             </button>

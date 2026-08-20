@@ -58,14 +58,14 @@ function JobHistory() {
             <div className="flex flex-col gap-4">
               {history.map((job) => (
                 <div key={job.id} className="bg-white p-5 rounded-xl shadow dark:bg-slate-800">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="font-semibold text-lg dark:text-gray-300 pb-2">{job.title}</h2>
+                  <div className="flex justify-between items-start gap-3">
+                    <div className="min-w-0">
+                      <h2 className="font-semibold text-lg dark:text-gray-300 pb-2 break-words">{job.title}</h2>
 
-                      <p className="text-gray-500 text-sm dark:text-gray-400 flex items-center gap-2"> <MapPin className="w-5 h-5" /> {job.location}</p>
+                      <p className="text-gray-500 text-sm dark:text-gray-400 flex items-center gap-2"> <MapPin className="w-5 h-5 shrink-0" /> {job.location}</p>
                     </div>
 
-                    <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full font-semibold">
+                    <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full font-semibold shrink-0">
                       Finalizado
                     </span>
                   </div>

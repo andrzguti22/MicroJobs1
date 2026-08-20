@@ -26,10 +26,10 @@ function JobCard({ job }) {
       className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow cursor-pointer transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-105 dark:hover:bg-slate-700 dark:hover:ring-2 dark:hover:ring-cyan-400/40 dark:hover:shadow-[0_0_30px_rgba(34,211,238,0.25)]"
     >
       {/* HEADER */}
-      <div className="flex justify-between items-start">
-        <h2 className="font-semibold text-lg text-dark dark:text-white">{job.title}</h2>
+      <div className="flex justify-between items-start gap-2">
+        <h2 className="font-semibold text-lg text-dark dark:text-white break-words min-w-0">{job.title}</h2>
 
-        <span className="text-primary font-bold text-lg">${job.price}</span>
+        <span className="text-primary font-bold text-lg shrink-0">${job.price}</span>
       </div>
 
       {/* DESCRIPCIÓN */}

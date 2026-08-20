@@ -98,7 +98,7 @@ function Messages() {
       <DashboardHeader />
 
       <PageWrapper>
-        <div className="max-w-3xl mx-auto p-6">
+        <div className="max-w-3xl mx-auto p-3 sm:p-6">
 
           {/* ============================= */}
           {/* TÍTULO */}
@@ -182,11 +182,11 @@ function Messages() {
                       }
                     `}
                   >
-                    <div className="flex justify-between items-start">
+                    <div className="flex justify-between items-start gap-3">
 
                       {/* Avatar */}
 
-                      <div className="flex gap-3">
+                      <div className="flex gap-3 min-w-0">
 
                         <div
                           className="
@@ -208,11 +208,11 @@ function Messages() {
                             .toUpperCase()}
                         </div>
 
-                        <div>
+                        <div className="min-w-0">
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
 
-                            <p className="font-semibold dark:text-gray-300">
+                            <p className="font-semibold dark:text-gray-300 truncate">
                               {chat.other_user?.name}
                             </p>
 
@@ -228,6 +228,7 @@ function Messages() {
                                   flex
                                   items-center
                                   justify-center
+                                  shrink-0
                                 "
                               >
                                 {chat.unread_count}
@@ -236,7 +237,7 @@ function Messages() {
 
                           </div>
 
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                             {chat.other_user?.email}
                           </p>
 
@@ -244,7 +245,7 @@ function Messages() {
 
                       </div>
 
-                      <span className="text-xs text-gray-400 ">
+                      <span className="text-xs text-gray-400 shrink-0 whitespace-nowrap">
                         {chat.updated_at
                           ? formatChatDate(chat.updated_at)
                           : ""}

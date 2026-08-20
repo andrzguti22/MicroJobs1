@@ -162,8 +162,8 @@ function MyJobs() {
                 key={job.id}
                 className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-md border border-gray-100 dark:border-slate-700 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="flex justify-between items-start p-5">
-                  <div>
+                <div className="flex justify-between items-start gap-3 p-5">
+                  <div className="min-w-0">
                     <span
                       className="
         inline-flex
@@ -182,10 +182,10 @@ function MyJobs() {
                       🟢 Activo
                     </span>
 
-                    <h2 className="text-xl font-bold mt-3 dark:text-white">{job.title}</h2>
+                    <h2 className="text-xl font-bold mt-3 dark:text-white break-words">{job.title}</h2>
                   </div>
 
-                  <span className="text-xl font-bold text-primary">${job.price}</span>
+                  <span className="text-xl font-bold text-primary shrink-0">${job.price}</span>
                 </div>
                 <div className="px-5 pb-5 space-y-2">
                   <div className="flex items-center gap-2 text-gray-500"><MapPin className="w-5 h-5"/> {job.location}</div>

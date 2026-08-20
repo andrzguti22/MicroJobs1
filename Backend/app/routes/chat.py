@@ -179,8 +179,11 @@ def get_user_conversations(
             else convo.updated_at
         )
 
-        if updated_at:
-            updated_at = updated_at.replace(tzinfo=None)
+        # No quitamos la zona horaria (tzinfo): así el frontend recibe la
+        # hora en UTC con su marca de zona, y el navegador la convierte
+        # correctamente a la hora local del usuario. Quitarla causaba que
+        # se mostrara una hora desfasada (se interpretaba como si ya
+        # estuviera en la zona horaria local, sin convertir).
 
         result.append({
 
