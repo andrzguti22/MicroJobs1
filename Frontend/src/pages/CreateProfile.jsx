@@ -3,15 +3,26 @@ import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch, API_URL } from "../api/client";
+import { apiFetch, API_URL, getStoredUser } from "../api/client";
 import { Pencil } from "lucide-react";
 import { AVAILABLE_CITIES } from "../constants/cities";
+import { useToast } from "../context/ToastContext";
+
+// "profile_image" puede ser una URL completa (Supabase Storage,
+// imágenes nuevas) o una ruta relativa vieja (uploads/..., de antes de
+// la migración a Supabase Storage) -- solo anteponemos API_URL en el
+// segundo caso.
+function resolveImageUrl(path) {
+  if (!path) return "";
+  return path.startsWith("http") ? path : `${API_URL}/${path}`;
+}
 
 function CreateProfile() {
   const { saveUser } = useContext(UserContext);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+  const currentUser = getStoredUser();
 
   const [form, setForm] = useState({
     name: "",
@@ -43,7 +54,7 @@ function CreateProfile() {
     });
 
     if (currentUser.profile_image) {
-      setPreview(`${API_URL}/${currentUser.profile_image}`);
+      setPreview(resolveImageUrl(currentUser.profile_image));
     }
   }, []);
 
@@ -116,10 +127,11 @@ function CreateProfile() {
         body: formData,
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
       if (!response.ok) {
         setSaving(false);
+        showToast(data?.detail || "No se pudo guardar el perfil", "error");
         return;
       }
 
@@ -128,7 +140,7 @@ function CreateProfile() {
       saveUser(data.user);
 
       if (data.user.profile_image) {
-        setPreview(`${API_URL}/${data.user.profile_image}`);
+        setPreview(resolveImageUrl(data.user.profile_image));
       }
 
       setSaving(false);
@@ -140,6 +152,7 @@ function CreateProfile() {
     } catch (error) {
       console.error(error);
       setSaving(false);
+      showToast("No se pudo guardar el perfil", "error");
     }
   };
 

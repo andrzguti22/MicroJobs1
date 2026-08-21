@@ -58,6 +58,7 @@ async def upload_image(contents: bytes, extension: str, folder: str) -> str:
             upload_url,
             content=contents,
             headers={
+                "apikey": SUPABASE_SERVICE_ROLE_KEY,
                 "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
                 "Content-Type": content_type,
                 "x-upsert": "false",
@@ -106,6 +107,7 @@ async def delete_image(image_url: str) -> None:
                 delete_url,
                 json={"prefixes": [object_path]},
                 headers={
+                    "apikey": SUPABASE_SERVICE_ROLE_KEY,
                     "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
                 },
             )
