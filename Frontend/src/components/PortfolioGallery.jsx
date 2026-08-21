@@ -3,6 +3,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ImagePlus, Loader2, Trash2, X, ImageOff, Image } from "lucide-react";
 import { apiFetch, API_URL } from "../api/client";
 
+// "image_path" puede ser una URL completa (Supabase Storage, imágenes
+// nuevas) o una ruta relativa vieja (uploads/..., de antes de la
+// migración a Supabase Storage) -- solo anteponemos API_URL en el
+// segundo caso.
+function resolveImageUrl(path) {
+  if (!path) return "";
+  return path.startsWith("http") ? path : `${API_URL}/${path}`;
+}
+
 function PortfolioGallery({ userId, editable = false }) {
   const [images, setImages] = useState([]);
 
@@ -180,7 +189,7 @@ function PortfolioGallery({ userId, editable = false }) {
               onClick={() => setSelectedImage(img)}
             >
               <img
-                src={`${API_URL}/${img.image_path}`}
+                src={resolveImageUrl(img.image_path)}
                 alt={img.description || "Trabajo realizado"}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
@@ -233,7 +242,7 @@ function PortfolioGallery({ userId, editable = false }) {
               </button>
 
               <img
-                src={`${API_URL}/${selectedImage.image_path}`}
+                src={resolveImageUrl(selectedImage.image_path)}
                 alt={selectedImage.description || "Trabajo realizado"}
                 className="w-full max-h-[80vh] object-contain rounded-xl"
               />

@@ -15,8 +15,14 @@ function Avatar({
     "2xl": "w-32 h-32",
   };
 
+  // "image" puede ser una URL completa (Supabase Storage, imágenes
+  // nuevas) o una ruta relativa vieja (uploads/..., de antes de la
+  // migración a Supabase Storage) -- solo anteponemos API_URL en el
+  // segundo caso.
   const avatar = image
-    ? `${API_URL}/${image}`
+    ? image.startsWith("http")
+      ? image
+      : `${API_URL}/${image}`
     : `https://ui-avatars.com/api/?name=${encodeURIComponent(
         name || "Usuario"
       )}&background=random`;

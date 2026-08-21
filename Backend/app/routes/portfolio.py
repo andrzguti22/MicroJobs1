@@ -10,6 +10,7 @@ from app.models.portfolio import PortfolioImage
 from app.schemas.portfolio import PortfolioImageOut
 from app.dependencies import get_current_user
 from app.utils.image_validation import validate_and_read_image
+from app.utils.storage import upload_image, delete_image
 
 router = APIRouter()
 
@@ -80,20 +81,11 @@ async def upload_portfolio_image(
 
     contents, extension = await validate_and_read_image(image)
 
-    folder = f"uploads/portfolio/{user_id}"
-
-    os.makedirs(folder, exist_ok=True)
-
-    filename = f"{uuid.uuid4()}.{extension}"
-
-    filepath = os.path.join(folder, filename)
-
-    with open(filepath, "wb") as buffer:
-        buffer.write(contents)
+    image_url = await upload_image(contents, extension, f"portfolio/{user_id}")
 
     new_image = PortfolioImage(
         user_id=user_id,
-        image_path=filepath.replace("\\", "/"),
+        image_path=image_url,
         description=description or None,
     )
 
@@ -108,7 +100,7 @@ async def upload_portfolio_image(
 # 🔥 ELIMINAR IMAGEN DEL PORTAFOLIO
 # ====================================
 @router.delete("/portfolio/{image_id}")
-def delete_portfolio_image(
+async def delete_portfolio_image(
     image_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -122,12 +114,8 @@ def delete_portfolio_image(
     if current_user.id != image.user_id and current_user.role != "admin":
         raise HTTPException(403, "No puedes eliminar imágenes del portafolio de otro usuario")
 
-    # Borrar el archivo físico si existe
-    if image.image_path and os.path.exists(image.image_path):
-        try:
-            os.remove(image.image_path)
-        except OSError:
-            pass
+    # Borrar el archivo del storage si existe
+    await delete_image(image.image_path)
 
     db.delete(image)
     db.commit()

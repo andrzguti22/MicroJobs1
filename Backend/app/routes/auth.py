@@ -16,6 +16,7 @@ from app.utils.jwt_handler import create_access_token
 from app.dependencies import get_current_user
 from app.rate_limiter import limiter
 from app.utils.image_validation import validate_and_read_image
+from app.utils.storage import upload_image
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
@@ -168,16 +169,7 @@ async def update_profile(
 
         contents, extension = await validate_and_read_image(profile_image)
 
-        os.makedirs("uploads/profile_images", exist_ok=True)
-
-        filename = f"{uuid.uuid4()}.{extension}"
-
-        filepath = os.path.join("uploads/profile_images", filename)
-
-        with open(filepath, "wb") as buffer:
-            buffer.write(contents)
-
-        user.profile_image = filepath.replace("\\", "/")
+        user.profile_image = await upload_image(contents, extension, "profile_images")
 
     db.commit()
     db.refresh(user)
