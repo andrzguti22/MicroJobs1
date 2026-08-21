@@ -43,42 +43,55 @@ class User(Base):
     email_verification_token_expires = Column(DateTime(timezone=True), nullable=True)
 
     # 🔥 trabajos creados
+    #
+    # passive_deletes=True: le dice a SQLAlchemy que NO intente manejar
+    # los trabajos relacionados por su cuenta (lo cual, por defecto,
+    # intenta poner owner_id en NULL antes de borrar -- y como esa
+    # columna es NOT NULL, eso revienta con un error). En vez de eso,
+    # confiamos en el ON DELETE CASCADE que ya existe a nivel de base
+    # de datos para esta columna.
     jobs_created = relationship(
         "Job",
         foreign_keys="Job.owner_id",
-        back_populates="owner"
+        back_populates="owner",
+        passive_deletes=True
     )
 
     # 🔥 trabajos asignados
     assigned_jobs = relationship(
         "Job",
         foreign_keys="Job.assigned_to_id",
-        back_populates="assigned_user"
+        back_populates="assigned_user",
+        passive_deletes=True
     )
 
     # 🔥 postulaciones
     applications = relationship(
         "Application",
-        back_populates="applicant"
+        back_populates="applicant",
+        passive_deletes=True
     )
     
         # 🔥 reseñas escritas
     reviews_written = relationship(
         "Review",
         foreign_keys="Review.reviewer_id",
-        back_populates="reviewer"
+        back_populates="reviewer",
+        passive_deletes=True
     )
 
     # 🔥 reseñas recibidas
     reviews_received = relationship(
         "Review",
         foreign_keys="Review.reviewed_user_id",
-        back_populates="reviewed_user"
+        back_populates="reviewed_user",
+        passive_deletes=True
     )
 
     # 🔥 portafolio de imágenes (trabajos realizados)
     portfolio_images = relationship(
         "PortfolioImage",
         back_populates="user",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        passive_deletes=True
     )
