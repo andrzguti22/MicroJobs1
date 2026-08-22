@@ -115,7 +115,7 @@ def get_user_reviews(
             "rating": review.rating,
             "comment": review.comment,
             "created_at": review.created_at,
-            "reviewer_name": review.reviewer.name
+            "reviewer_name": review.reviewer.name if review.reviewer else "Usuario eliminado"
         }
         for review in reviews
     ]

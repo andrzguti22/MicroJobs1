@@ -32,12 +32,14 @@ class Review(Base):
 
     reviewer_id = Column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE")
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
     )
 
     reviewed_user_id = Column(
         Integer,
-        ForeignKey("users.id", ondelete="CASCADE")
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
     )
 
     rating = Column(Integer)
