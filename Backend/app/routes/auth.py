@@ -137,6 +137,7 @@ def get_me(current_user: User = Depends(get_current_user)):
 @router.put("/profile/{email}")
 async def update_profile(
     email: str,
+    name: str = Form(...),
     city: str = Form(...),
     phone: str = Form(...),
     experience: str = Form(...),
@@ -155,6 +156,7 @@ async def update_profile(
     if current_user.id != user.id and current_user.role != "admin":
         raise HTTPException(403, "No puedes editar el perfil de otro usuario")
 
+    user.name = name
     user.city = city
     user.phone = phone
     user.experience = experience

@@ -112,6 +112,7 @@ function CreateProfile() {
     try {
       const formData = new FormData();
 
+      formData.append("name", form.name);
       formData.append("city", form.city);
       formData.append("phone", form.phone);
       formData.append("experience", form.experience);
