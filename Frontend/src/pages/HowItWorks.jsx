@@ -61,7 +61,7 @@ function HowItWorks() {
         <div className="max-w-6xl mx-auto px-6 py-16">
           {/* HEADER */}
           <h1 className="text-3xl md:text-4xl font-bold text-center text-dark dark:text-white">
-            ¿Cómo funciona MicroJobs Local?
+            ¿Cómo funciona MicroJobs?
           </h1>
 
           <p className="text-center text-gray-500 mt-4 mb-12 dark:text-gray-400">
