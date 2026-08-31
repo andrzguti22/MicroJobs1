@@ -241,6 +241,54 @@ def create_job(
 
 
 # =========================
+# UPDATE JOB (solo el dueño, y solo mientras esté activo y sin asignar)
+# =========================
+@router.put("/jobs/{job_id}")
+def update_job(
+    job_id: int,
+    job_data: JobUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+
+    job = db.query(Job).filter(Job.id == job_id).first()
+
+    if not job:
+        raise HTTPException(404, "Trabajo no encontrado")
+
+    if job.owner_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(403, "No puedes editar un trabajo que no es tuyo")
+
+    if job.status == "finished":
+        raise HTTPException(400, "No se puede editar un trabajo ya finalizado")
+
+    if job.assigned_to_id is not None:
+        raise HTTPException(
+            400,
+            "No se puede editar un trabajo que ya tiene a alguien asignado"
+        )
+
+    if job_data.price <= 0:
+        raise HTTPException(400, "El precio debe ser mayor que cero")
+
+    if job_data.price > 9999999999:
+        raise HTTPException(400, "Precio demasiado alto")
+
+    job.title = job_data.title
+    job.description = job_data.description
+    job.location = job_data.location
+    job.price = job_data.price
+
+    db.commit()
+    db.refresh(job)
+
+    return {
+        "message": "Trabajo actualizado",
+        "job": job
+    }
+    
+    
+# =========================
 # GET USER JOBS
 # =========================
 @router.get("/jobs/user/{user_id}")
