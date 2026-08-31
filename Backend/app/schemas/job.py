@@ -6,3 +6,10 @@ class JobCreate(BaseModel):
     location: str
     price: float
     owner_id: int
+    
+class JobUpdate(BaseModel):
+    title: str
+    description: str
+    location: str
+    price: float
+    owner_id: int

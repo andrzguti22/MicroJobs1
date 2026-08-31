@@ -9,7 +9,7 @@ from app.models.user import User
 from app.models.application import Application
 from app.models.job_history import JobHistory
 
-from app.schemas.job import JobCreate
+from app.schemas.job import JobCreate, JobUpdate
 from app.dependencies import get_current_user
 
 router = APIRouter()
