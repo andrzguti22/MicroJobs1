@@ -199,12 +199,19 @@ function MyJobs() {
 
                 <hr className="dark:border-slate-700" />
 
-                <div className="grid grid-cols-2 gap-3 p-5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-5">
                   <button
                     onClick={() => navigate(`/job-applications/${job.id}`)}
                     className="bg-primary text-white rounded-xl py-3 font-semibold hover:scale-105 transition"
                   >
                     Ver postulantes
+                  </button>
+
+                  <button
+                    onClick={() => navigate(`/edit-job/${job.id}`)}
+                    className="bg-amber-500 text-white rounded-xl py-3 font-semibold hover:bg-amber-600 transition"
+                  >
+                    Editar
                   </button>
 
                   <button

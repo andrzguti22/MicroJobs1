@@ -63,6 +63,7 @@ function App() {
         <Route path="/applications" element={<ProtectedRoute><MyApplications /></ProtectedRoute>} />
         <Route path="/my-jobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
         <Route path="/create" element={<CreateJob />} />
+        <Route path="/edit-job/:jobId" element={<ProtectedRoute><CreateJob /></ProtectedRoute>} />
         <Route path="/explore" element={<ExploreJobs />} />
         <Route path="/job/:id" element={<ProtectedRoute><JobDetail /></ProtectedRoute>} />
         <Route path="/job-applications/:jobId" element={<ProtectedRoute><JobApplications /></ProtectedRoute>} />
