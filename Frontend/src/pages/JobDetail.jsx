@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import { useEffect, useState } from "react";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch, API_URL } from "../api/client";
+import { apiFetch, API_URL, getErrorMessage } from "../api/client";
 import { useToast } from "../context/ToastContext";
 import { MapPin } from 'lucide-react';
 import JobDetailSkeleton from "../components/JobDetailSkeleton";
@@ -111,7 +111,7 @@ function JobDetail() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.detail || "Error aplicando");
+        throw new Error(getErrorMessage(data, "Error aplicando"));
       }
 
       showToast("Postulación enviada 🚀", "success");

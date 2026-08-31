@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DashboardHeader from "../components/DashboardHeader";
 import PageWrapper from "../components/PageWrapper";
-import { apiFetch, API_URL, getStoredUser } from "../api/client";
+import { apiFetch, API_URL, getStoredUser, getErrorMessage } from "../api/client";
 import { useToast } from "../context/ToastContext";
 import { AVAILABLE_CITIES } from "../constants/cities";
 
@@ -109,7 +109,7 @@ function CreateJob() {
       const data = await response.json();
 
       if (!response.ok) {
-        showToast(data.detail || "No se pudo guardar el trabajo", "error");
+        showToast(getErrorMessage(data, "No se pudo guardar el trabajo"), "error");
         setSaving(false);
         return;
       }

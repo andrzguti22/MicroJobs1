@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 import { UserContext } from "../context/UserContext";
 import { useToast } from "../context/ToastContext";
-import { API_URL } from "../api/client";
+import { API_URL, getErrorMessage } from "../api/client";
 
 function Register() {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ function Register() {
       const data = await response.json();
 
       if (!response.ok) {
-        setErrors({ email: data.detail });
+        setErrors({ email: getErrorMessage(data, "No se pudo completar el registro") });
         return;
       }
 
