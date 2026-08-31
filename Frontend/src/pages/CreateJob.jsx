@@ -108,11 +108,6 @@ function CreateJob() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        showToast(getErrorMessage(data, "No se pudo guardar el trabajo"), "error");
-        setSaving(false);
-        return;
-      }
 
       showToast(isEditMode ? "Trabajo actualizado ✅" : "Trabajo publicado 🎉", "success");
 
