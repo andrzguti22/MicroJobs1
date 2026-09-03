@@ -176,6 +176,19 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
                 "name": user.name,
                 "email": user.email,
             }
+            
+    owner_data = None
+    
+    owner = db.query(User).filter(
+        User.id == job.owner_id
+    ).first()
+        
+    if owner:
+        owner_data = {
+            "id": owner.id,
+            "name": owner.name,
+            "email": owner.email,
+            }
 
     return {
         "id": job.id,
@@ -185,6 +198,7 @@ def get_job(job_id: int, db: Session = Depends(get_db)):
         "price": job.price,
         "status": job.status,
         "owner_id": job.owner_id,
+        "owner": owner_data,
         "assigned_to_id": job.assigned_to_id,
         "assignedTo": assigned_user,
         "applicationsCount": applications_count,

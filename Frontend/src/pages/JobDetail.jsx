@@ -223,17 +223,13 @@ function JobDetail() {
           </button>
 
           {/* encabezado */}
-          <span
-            className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full mb-3 ${statusBadge.className}`}
-          >
+          <span className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full mb-3 ${statusBadge.className}`}>
             {statusBadge.label}
           </span>
 
           <h1 className="text-2xl sm:text-3xl font-bold dark:text-white">{job.title}</h1>
 
-          <p className="text-gray-600 dark:text-gray-300 mt-3 text-[15px] leading-relaxed">
-            {job.description}
-          </p>
+          <p className="text-gray-600 dark:text-gray-300 mt-3 text-[15px] leading-relaxed">{job.description}</p>
 
           <div className="flex flex-wrap gap-2 mt-3">
             <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md">
@@ -242,7 +238,10 @@ function JobDetail() {
             </span>
 
             {job.owner?.name && (
-              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md">
+              <span
+                onClick={() => navigate(`/profile/${job.owner.id}`)}
+                className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md cursor-pointer hover:underline"
+              >
                 <UserIcon className="w-3.5 h-3.5" />
                 Publicado por {job.owner.name}
               </span>
