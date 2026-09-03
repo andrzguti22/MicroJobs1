@@ -1,65 +1,235 @@
 <!doctype html>
 <html lang="es">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="google-site-verification" content="843iCsVTKpLKyVGGcEGxKSFUmytU6ndYcNtwWBYbo1s" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
-    <!-- Favicons -->
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- =========================================================
+         CONFIGURACIÓN BÁSICA
+    ========================================================== -->
 
-    <!-- SEO básico -->
-    <title>MicroJobs | Encuentra y publica trabajos freelance cerca de ti</title>
+    <meta charset="UTF-8" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <meta name="theme-color" content="#5B5FEF" />
+
+    <!-- Google Search Console -->
+    <meta
+      name="google-site-verification"
+      content="843iCsVTKpLKyVGGcEGxKSFUmytU6ndYcNtwWBYbo1s"
+    />
+
+    <!-- =========================================================
+         SEO PRINCIPAL
+    ========================================================== -->
+
+    <title>
+      MicroJobs | Encuentra y publica trabajos freelance cerca de ti
+    </title>
+
     <meta
       name="description"
-      content="MicroJobs conecta personas que necesitan ayuda con pequeños trabajos con freelancers y profesionales independientes disponibles cerca de ti. Publica un trabajo o encuentra tu próxima chamba hoy mismo."
+      content="MicroJobs conecta personas que necesitan ayuda con pequeños trabajos con freelancers y profesionales independientes disponibles cerca de ti. Publica un trabajo o encuentra tu próxima oportunidad."
     />
-    <meta
-      name="keywords"
-      content="micro jobs, trabajos freelance, chambas, trabajos independientes, freelancers, empleos cortos, trabajos por tarea"
-    />
-    <link rel="canonical" href="https://microjobs.store/" />
+
     <meta name="robots" content="index, follow" />
 
-    <!-- Open Graph (Facebook, WhatsApp, LinkedIn, etc.) -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="MicroJobs" />
-    <meta property="og:title" content="MicroJobs | Encuentra y publica trabajos freelance cerca de ti" />
+    <link
+      rel="canonical"
+      href="https://microjobs.store/"
+    />
+
+    <!-- =========================================================
+         FAVICON
+    ========================================================== -->
+
+    <!-- Principal -->
+    <link
+      rel="icon"
+      href="/favicon.ico"
+    />
+
+    <!-- Alta resolución para navegadores y motores de búsqueda -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="/android-chrome-512x512.png"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="/android-chrome-192x192.png"
+    />
+
+    <!-- Compatibilidad -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon-32x32.png"
+    />
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/favicon-16x16.png"
+    />
+
+    <!-- Apple -->
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/apple-touch-icon.png"
+    />
+
+    <!-- =========================================================
+         FUENTE
+    ========================================================== -->
+
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- =========================================================
+         OPEN GRAPH
+         Facebook / WhatsApp / LinkedIn / etc.
+    ========================================================== -->
+
+    <meta
+      property="og:type"
+      content="website"
+    />
+
+    <meta
+      property="og:site_name"
+      content="MicroJobs"
+    />
+
+    <meta
+      property="og:locale"
+      content="es_CO"
+    />
+
+    <meta
+      property="og:title"
+      content="MicroJobs | Encuentra y publica trabajos freelance cerca de ti"
+    />
+
     <meta
       property="og:description"
-      content="Conecta con freelancers y profesionales independientes, o publica tu propio trabajo, todo en un solo lugar."
+      content="Conecta con freelancers y profesionales independientes, publica pequeños trabajos y encuentra oportunidades cerca de ti."
     />
-    <meta property="og:url" content="https://microjobs.store/" />
-    <meta property="og:image" content="https://microjobs.store/logo.png" />
-    <meta property="og:locale" content="es_ES" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="MicroJobs | Encuentra y publica trabajos freelance cerca de ti" />
+    <meta
+      property="og:url"
+      content="https://microjobs.store/"
+    />
+
+    <meta
+      property="og:image"
+      content="https://microjobs.store/logo.png"
+    />
+
+    <meta
+      property="og:image:alt"
+      content="MicroJobs - Plataforma de trabajos freelance"
+    />
+
+    <!-- =========================================================
+         TWITTER / X
+    ========================================================== -->
+
+    <meta
+      name="twitter:card"
+      content="summary_large_image"
+    />
+
+    <meta
+      name="twitter:title"
+      content="MicroJobs | Encuentra y publica trabajos freelance cerca de ti"
+    />
+
     <meta
       name="twitter:description"
-      content="Conecta con freelancers y profesionales independientes, o publica tu propio trabajo, todo en un solo lugar."
+      content="Conecta con freelancers y profesionales independientes y encuentra pequeños trabajos cerca de ti."
     />
-    <meta name="twitter:image" content="https://microjobs.store/logo.png" />
 
-    <!-- Datos estructurados para Google -->
+    <meta
+      name="twitter:image"
+      content="https://microjobs.store/logo.png"
+    />
+
+    <meta
+      name="twitter:image:alt"
+      content="MicroJobs - Plataforma de trabajos freelance"
+    />
+
+    <!-- =========================================================
+         DATOS ESTRUCTURADOS - ORGANIZACIÓN
+    ========================================================== -->
+
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "MicroJobs",
-        "url": "https://microjobs.store/",
-        "description": "Plataforma para publicar y encontrar trabajos freelance cerca de ti."
-      }
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "https://microjobs.store/#organization",
+      "name": "MicroJobs",
+      "url": "https://microjobs.store/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://microjobs.store/logo.png"
+      },
+      "description": "Plataforma que conecta personas que necesitan ayuda con pequeños trabajos con freelancers y profesionales independientes disponibles cerca de ellos."
+    }
     </script>
+
+    <!-- =========================================================
+         DATOS ESTRUCTURADOS - WEBSITE
+    ========================================================== -->
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://microjobs.store/#website",
+      "url": "https://microjobs.store/",
+      "name": "MicroJobs",
+      "alternateName": "MicroJobs Local",
+      "description": "Plataforma para publicar y encontrar pequeños trabajos freelance cerca de ti.",
+      "publisher": {
+        "@id": "https://microjobs.store/#organization"
+      },
+      "inLanguage": "es-CO"
+    }
+    </script>
+
   </head>
+
   <body>
+
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+
+    <script
+      type="module"
+      src="/src/main.jsx"
+    ></script>
+
   </body>
 </html>
