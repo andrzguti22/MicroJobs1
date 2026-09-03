@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import PageWrapper from "../components/PageWrapper";
 import { apiFetch, API_URL, getErrorMessage } from "../api/client";
 import { useToast } from "../context/ToastContext";
-import { MapPin, Clock, Users, Send, ArrowLeft, ShieldCheck } from "lucide-react";
+import { MapPin, Clock, Users, Send, ArrowLeft, ShieldCheck, User as UserIcon } from "lucide-react";
 import JobDetailSkeleton from "../components/JobDetailSkeleton";
 
 // $2000000 -> "$2.000.000"
@@ -31,15 +31,21 @@ function formatRelativeDate(dateString) {
   return diffYears === 1 ? "Hace 1 año" : `Hace ${diffYears} años`;
 }
 
-// job.status -> etiqueta + estilos (ajusta las llaves si tu backend usa otros valores)
+// job.status -> etiqueta en español + color
 function getStatusBadge(status) {
   const map = {
-    available: { label: "Disponible", className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-    disponible: { label: "Disponible", className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" },
-    assigned: { label: "Asignado", className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
-    asignado: { label: "Asignado", className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
-    completed: { label: "Completado", className: "bg-gray-200 text-gray-700 dark:bg-gray-700/40 dark:text-gray-300" },
-    completado: { label: "Completado", className: "bg-gray-200 text-gray-700 dark:bg-gray-700/40 dark:text-gray-300" },
+    active: {
+      label: "Activo",
+      className: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    },
+    "in-progress": {
+      label: "En progreso",
+      className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+    },
+    finished: {
+      label: "Finalizado",
+      className: "bg-gray-200 text-gray-700 dark:bg-gray-700/40 dark:text-gray-300",
+    },
   };
 
   const key = (status || "").toLowerCase();
@@ -229,32 +235,43 @@ function JobDetail() {
             {job.description}
           </p>
 
-          <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-3 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md">
-            <MapPin className="w-3.5 h-3.5" />
-            {job.location}
-          </span>
+          <div className="flex flex-wrap gap-2 mt-3">
+            <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md">
+              <MapPin className="w-3.5 h-3.5" />
+              {job.location}
+            </span>
+
+            {job.owner?.name && (
+              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md">
+                <UserIcon className="w-3.5 h-3.5" />
+                Publicado por {job.owner.name}
+              </span>
+            )}
+          </div>
 
           {/* barra de datos: precio, publicado, solicitudes */}
-          <div className="grid grid-cols-3 mt-6 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-            <div className="p-3 sm:p-4 border-r border-gray-200 dark:border-slate-700">
+          <div className="grid grid-cols-1 sm:grid-cols-3 mt-6 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 divide-y sm:divide-y-0 sm:divide-x divide-gray-200 dark:divide-slate-700">
+            <div className="p-3 sm:p-4 min-w-0">
               <span className="text-[11px] text-gray-500 dark:text-gray-400 block">Pago ofrecido</span>
-              <span className="text-lg sm:text-xl font-bold text-primary">{formatPrice(job.price)}</span>
+              <span className="block text-xl sm:text-2xl font-bold text-primary break-all">
+                {formatPrice(job.price)}
+              </span>
             </div>
 
-            <div className="p-3 sm:p-4 border-r border-gray-200 dark:border-slate-700">
+            <div className="p-3 sm:p-4 min-w-0">
               <span className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
                 <Clock className="w-3 h-3" /> Publicado
               </span>
-              <span className="text-sm sm:text-base font-medium dark:text-white">
+              <span className="block text-sm sm:text-base font-medium dark:text-white">
                 {formatRelativeDate(job.created_at)}
               </span>
             </div>
 
-            <div className="p-3 sm:p-4">
+            <div className="p-3 sm:p-4 min-w-0">
               <span className="text-[11px] text-gray-500 dark:text-gray-400 flex items-center gap-1">
                 <Users className="w-3 h-3" /> Solicitudes
               </span>
-              <span className="text-sm sm:text-base font-medium dark:text-white">
+              <span className="block text-sm sm:text-base font-medium dark:text-white">
                 {job.applicationsCount} {job.applicationsCount === 1 ? "persona" : "personas"}
               </span>
             </div>
