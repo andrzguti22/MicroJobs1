@@ -33,7 +33,7 @@ function JobCard({ job }) {
       <div className="flex justify-between items-start gap-2">
         <h2 className="font-semibold text-lg text-dark dark:text-white break-words min-w-0">{job.title}</h2>
 
-        <span className="text-primary font-bold text-lg shrink-0">${formatPrice(job.price)}</span>
+        <span className="text-primary font-bold text-lg shrink-0">{formatPrice(job.price)}</span>
       </div>
 
       {/* DESCRIPCIÓN */}
