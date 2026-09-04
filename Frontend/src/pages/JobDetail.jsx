@@ -238,13 +238,18 @@ function JobDetail() {
             </span>
 
             {job.owner?.name && (
-              <span
-                onClick={() => navigate(`/profile/${job.owner.id}`)}
-                className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-md cursor-pointer hover:underline"
-              >
-                <UserIcon className="w-3.5 h-3.5" />
-                Publicado por {job.owner.name}
-              </span>
+              <div className="inline-flex flex-col gap-0.5 bg-white dark:bg-slate-800 px-2.5 py-1.5 rounded-md">
+                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                  <UserIcon className="w-3.5 h-3.5" />
+                  Publicado por {job.owner.name}
+                </span>
+                <button
+                  onClick={() => navigate(`/user/${job.owner.id}`)}
+                  className="text-xs text-primary font-medium text-left hover:underline w-fit"
+                >
+                  Ver perfil
+                </button>
+              </div>
             )}
           </div>
 
